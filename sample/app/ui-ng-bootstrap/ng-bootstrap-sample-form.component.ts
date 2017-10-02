@@ -20,4 +20,8 @@ export class NGBootstrapSampleFormComponent implements OnInit {
     ngOnInit() {
         this.formGroup = this.formService.createFormGroup(this.formModel);
     }
+    test(){
+        let inputModel = this.formService.findById("roomQuantity", this.formModel) ;
+        inputModel.valueUpdates.next(999);
+    }
 }

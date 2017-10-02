@@ -8,6 +8,8 @@
     "flatModuleId": "@ng-dynamic-forms/core",
     "flatModuleOutFile": "core.js",
     "skipTemplateCodegen": true,
-    "strictMetadataEmit": true
+    "strictMetadataEmit": true,
+    "experimentalDecorators": true
   }
 }
+

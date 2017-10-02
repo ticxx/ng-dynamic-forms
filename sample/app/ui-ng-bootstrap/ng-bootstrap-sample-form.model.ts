@@ -8,172 +8,156 @@ import {
     DynamicRadioGroupModel,
     DynamicSelectModel,
     DynamicTextAreaModel,
-    DynamicTimePickerModel
+    DynamicTimePickerModel,
+    DynamicFormLayoutGroupModel
 } from "@ng-dynamic-forms/core";
+import { LayoutGroupLayoutType } from "../../../packages/core/src/model/form-layout-group/dynamic-form-layout-group.model";
+import { GroupLayoutType } from "../../../dist/@ng-dynamic-forms/core/src/model/form-group/dynamic-form-group.model";
 
 export const NG_BOOTSTRAP_SAMPLE_FORM_MODEL: DynamicFormControlModel[] = [
 
-    new DynamicFormGroupModel(
-        {
-            id: "stay",
-            group: [
 
-                new DynamicDatePickerModel(
-                    {
-                        id: "arrivalDate",
-                        inline: false,
-                        label: "Arrival",
-                        placeholder: "Date of Arrival",
-                        toggleIcon: "./assets/calendar-icon.svg"
-                    },
-                    {
-                        element: {
-                            container: "p-0",
-                            label: "col-form-label"
-                        },
-                        grid: {
-                            host: "col-sm-4"
-                        }
-                    }
-                ),
+new DynamicFormGroupModel(
+    {
+        id: "tabsi",
+        layoutType: GroupLayoutType.tabset,
+        legend: "tabset",
+        group: [
+            new DynamicFormLayoutGroupModel(
+                {
+                    id: "room",
+                    layoutType: LayoutGroupLayoutType.tab,
+                    caption: "room",
+                    layoutGroup: [
+                        new DynamicFormGroupModel(
+                            {
+                                id: "card",
+                                layoutType: "card",
+                                legend: "Room",
+                                group: [
+                                    new DynamicSelectModel(
+                                        {
+                                            id: "roomSize",
+                                            label: "Room Size",
+                                            options: [
+                                                {
+                                                    label: "Single Room",
+                                                    value: "single-room"
+                                                },
+                                                {
+                                                    label: "Double Room",
+                                                    value: "double-room"
+                                                },
+                                                {
+                                                    label: "Business Suite",
+                                                    value: "business-suite"
+                                                },
+                                                {
+                                                    label: "Presidential Suite",
+                                                    value: "presidential-suite"
+                                                },
+                                                {
+                                                    label: "Storeroom",
+                                                    value: "storeroom"
+                                                }
+                                            ],
+                                            value: "single-room"
+                                        },
+                                        {
+                                            element: {
+                                                label: "col-form-label"
+                                            },
+                                            grid: {
+                                                host: "col-sm-6"
+                                            }
+                                        }
+                                    ),
+                                    new DynamicInputModel(
+                                        {
+                                            id: "roomQuantity",
+                                            inputType: "number",
+                                            label: "Quantity",
+                                            placeholder: "Quantity",
+                                            hint: "Maximum: 5",
+                                            max: 5,
+                                            min: 0,
+                                            value: 1
+                                        },
+                                        {
+                                            element: {
+                                                container: "text-center",
+                                                label: "col-form-label"
+                                            },
+                                            grid: {
+                                                host: "col-sm-2"
+                                            }
+                                        }
+                                    )
+                                ]
 
-                new DynamicDatePickerModel(
-                    {
-                        id: "departureDate",
-                        inline: false,
-                        label: "Departure",
-                        placeholder: "Date of Departure",
-                        toggleIcon: "./assets/calendar-icon.svg"
-                    },
-                    {
-                        element: {
-                            container: "p-0",
-                            label: "col-form-label"
-                        },
-                        grid: {
-                            host: "col-sm-4"
-                        }
-                    }
-                )
-            ]
-        },
-        {
-            element: {
-                control: "form-row"
-            }
-        }
-    ),
-
-    new DynamicFormGroupModel(
-        {
-            id: "room",
-            group: [
-
-                new DynamicSelectModel(
-                    {
-                        id: "roomSize",
-                        label: "Room Size",
-                        options: [
-                            {
-                                label: "Single Room",
-                                value: "single-room"
-                            },
-                            {
-                                label: "Double Room",
-                                value: "double-room"
-                            },
-                            {
-                                label: "Business Suite",
-                                value: "business-suite"
-                            },
-                            {
-                                label: "Presidential Suite",
-                                value: "presidential-suite"
-                            },
-                            {
-                                label: "Storeroom",
-                                value: "storeroom"
                             }
-                        ],
-                        value: "single-room"
-                    },
-                    {
-                        element: {
-                            label: "col-form-label"
+                        )
+                ]
+            }
+        ),
+        new DynamicFormLayoutGroupModel(
+            {
+                id: "name",
+                layoutType: LayoutGroupLayoutType.tab,
+                caption: "name",
+                layoutGroup: [
+                    new DynamicInputModel(
+                        {
+                            id: "firstName",
+                            label: "First Name",
+                            placeholder: "First Name",
+                            validators: {
+                                required: null
+                            },
+                            errorMessages: {
+                                required: "{{ label }} is required"
+                            }
                         },
-                        grid: {
-                            host: "col-sm-6"
+                        {
+                            element: {
+                                label: "col-form-label"
+                            }
                         }
-                    }
-                ),
-                new DynamicInputModel(
-                    {
-                        id: "roomQuantity",
-                        inputType: "number",
-                        label: "Quantity",
-                        placeholder: "Quantity",
-                        hint: "Maximum: 5",
-                        max: 5,
-                        min: 0,
-                        value: 1
-                    },
-                    {
-                        element: {
-                            container: "text-center",
-                            label: "col-form-label"
+                    ),
+
+                    new DynamicInputModel(
+                        {
+                            id: "lastName",
+                            label: "Last Name",
+                            placeholder: "Last Name",
+                            validators: {
+                                required: null
+                            },
+                            errorMessages: {
+                                required: "{{ label }} is required"
+                            }
                         },
-                        grid: {
-                            host: "col-sm-2"
+                        {
+                            element: {
+                                label: "col-form-label"
+                            }
                         }
-                    }
-                )
-            ]
-        },
-        {
-            element: {
-                control: "form-row"
-            }
-        }
+                    )
+                    ]})
+        ]
+
+    }
     ),
 
-    new DynamicInputModel(
-        {
-            id: "firstName",
-            label: "First Name",
-            placeholder: "First Name",
-            validators: {
-                required: null
-            },
-            errorMessages: {
-                required: "{{ label }} is required"
-            }
-        },
-        {
-            element: {
-                label: "col-form-label"
-            }
-        }
-    ),
 
-    new DynamicInputModel(
-        {
-            id: "lastName",
-            label: "Last Name",
-            placeholder: "Last Name",
-            validators: {
-                required: null
-            },
-            errorMessages: {
-                required: "{{ label }} is required"
-            }
-        },
-        {
-            element: {
-                label: "col-form-label"
-            }
-        }
-    ),
 
+
+    new DynamicFormGroupModel(
+        {
+            id: "name",
+            layoutType: GroupLayoutType.card_with_header,
+            legend: "contact",
+            group: [
     new DynamicInputModel(
         {
             id: "email",
@@ -210,10 +194,12 @@ export const NG_BOOTSTRAP_SAMPLE_FORM_MODEL: DynamicFormControlModel[] = [
         }
     ),
 
-    new DynamicFormGroupModel(
+    new DynamicFormLayoutGroupModel(
         {
             id: "addressStreet",
-            group: [
+            layoutType: LayoutGroupLayoutType.card_with_title,
+            caption: "street",
+            layoutGroup: [
 
                 new DynamicInputModel(
                     {
@@ -314,7 +300,11 @@ export const NG_BOOTSTRAP_SAMPLE_FORM_MODEL: DynamicFormControlModel[] = [
                 control: "form-row"
             }
         }
-    ),
+    )]},{
+            element: {
+                control: "mt-3"
+            }
+        }),
 
     new DynamicCheckboxGroupModel(
         {

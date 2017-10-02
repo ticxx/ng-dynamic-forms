@@ -8,6 +8,10 @@ docs/
 node_modules/
 test/
 
+packages/core/src/**/*.js
+packages/core/src/**/*.js.map
+packages/core/src/**/*.d.ts
+
 sample/aot/
 sample/app/**/*.js
 sample/app/**/*.js.map
@@ -16,3 +20,4 @@ sample/dist
 sample/fonts
 sample/images
 
+/yarn.lock
