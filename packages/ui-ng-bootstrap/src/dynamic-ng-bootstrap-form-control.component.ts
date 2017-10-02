@@ -27,7 +27,12 @@ import {
     DYNAMIC_FORM_CONTROL_TYPE_SELECT,
     DYNAMIC_FORM_CONTROL_TYPE_TEXTAREA,
     DYNAMIC_FORM_CONTROL_TYPE_TIMEPICKER,
-    DynamicDatePickerModel
+    DynamicDatePickerModel,
+    DynamicFormGroupModel,
+    DYNAMIC_FORM_CONTROL_TYPE_LAYOUT_GROUP,
+    DynamicFormLayoutGroupModel,
+    LayoutGroupLayoutType,
+    GroupLayoutType
 } from "@ng-dynamic-forms/core";
 
 export const enum NGBootstrapFormControlType {
@@ -43,6 +48,10 @@ export const enum NGBootstrapFormControlType {
     Select = 9, //"SELECT",
     TextArea = 10, //"TEXTAREA",
     TimePicker = 11, //"TIMEPICKER"
+
+    LayoutGroupCardLayout= 80,
+    GroupCardLayout= 90
+
 }
 
 @Component({
@@ -99,8 +108,8 @@ export class DynamicNGBootstrapFormControlComponent extends DynamicFormControlCo
 
                 return datepickerModel.inline ? NGBootstrapFormControlType.Calendar : NGBootstrapFormControlType.DatePicker;
 
-            case DYNAMIC_FORM_CONTROL_TYPE_GROUP:
-                return NGBootstrapFormControlType.Group;
+            // case DYNAMIC_FORM_CONTROL_TYPE_GROUP:
+            //     return NGBootstrapFormControlType.Group;
 
             case DYNAMIC_FORM_CONTROL_TYPE_INPUT:
                 return NGBootstrapFormControlType.Input;
@@ -116,6 +125,26 @@ export class DynamicNGBootstrapFormControlComponent extends DynamicFormControlCo
 
             case DYNAMIC_FORM_CONTROL_TYPE_TIMEPICKER:
                 return NGBootstrapFormControlType.TimePicker;
+
+            case DYNAMIC_FORM_CONTROL_TYPE_LAYOUT_GROUP:
+                let g: DynamicFormLayoutGroupModel= <DynamicFormLayoutGroupModel>model;
+                if(g.layoutType===LayoutGroupLayoutType.card  ||
+                    g.layoutType===LayoutGroupLayoutType.card_with_title ||
+                    g.layoutType===LayoutGroupLayoutType.card_with_header){
+                    return NGBootstrapFormControlType.LayoutGroupCardLayout;
+                }else {
+                    console.error("No valid LayoutGroupLayoutTyp: " + g.layoutType);
+                }
+
+            case DYNAMIC_FORM_CONTROL_TYPE_GROUP:
+                let group: DynamicFormGroupModel= <DynamicFormGroupModel>model;
+                if(group.layoutType===GroupLayoutType.card  ||
+                    group.layoutType===GroupLayoutType.card_with_title ||
+                    group.layoutType===GroupLayoutType.card_with_header){
+                    return NGBootstrapFormControlType.GroupCardLayout;
+                }else{
+                    return NGBootstrapFormControlType.Group;
+                }
 
             default:
                 return null;

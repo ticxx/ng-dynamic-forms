@@ -24,6 +24,7 @@ import { DynamicTemplateDirective } from "../directive/dynamic-template.directiv
 import { Utils } from "../utils/core.utils";
 import { RelationUtils } from "../utils/relation.utils";
 import { DynamicFormValidationService } from "../service/dynamic-form-validation.service";
+import { DynamicFormLayoutGroupModel } from "../model/form-layout-group/dynamic-form-layout-group.model";
 
 export interface DynamicFormControlEvent {
 
@@ -74,7 +75,7 @@ export abstract class DynamicFormControlComponent implements OnChanges, OnInit, 
 
         if (groupChange || modelChange) {
 
-            if (this.model) {
+            if (this.model && !(this.model instanceof DynamicFormLayoutGroupModel)) {
 
                 this.unsubscribe();
 

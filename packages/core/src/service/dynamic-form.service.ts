@@ -42,9 +42,13 @@ import {
 } from "../model/timepicker/dynamic-timepicker.model";
 import { Utils } from "../utils/core.utils";
 import { DynamicFormValidationService } from "./dynamic-form-validation.service";
+import { DYNAMIC_FORM_CONTROL_TYPE_LAYOUT_GROUP, DynamicFormLayoutGroupModel } from "../model/form-layout-group/dynamic-form-layout-group.model";
+
 
 @Injectable()
 export class DynamicFormService {
+
+    private dynamicFormLayoutGroupModels: DynamicFormLayoutGroupModel[]=[];
 
     constructor(private formBuilder: FormBuilder, private validationService: DynamicFormValidationService) {}
 
@@ -100,6 +104,9 @@ export class DynamicFormService {
 
                 formGroup[model.id] = this.createFormGroup(formGroupModel.group, extra, formGroupModel);
 
+            } else if (model.type === DYNAMIC_FORM_CONTROL_TYPE_LAYOUT_GROUP ) {
+                this.addLayoutGroups(model, formGroup, parent);
+
             } else {
 
                 let formControlModel = model as DynamicFormValueControlModel<DynamicFormControlValue>;
@@ -115,7 +122,44 @@ export class DynamicFormService {
             }
         });
 
-        return this.formBuilder.group(formGroup, extra);
+
+        let angularFormGroup: FormGroup= this.formBuilder.group(formGroup, extra);
+        this.dynamicFormLayoutGroupModels.forEach((dfl: DynamicFormLayoutGroupModel)=>{
+            let a: AbstractControl = angularFormGroup.get(dfl.parent.id);
+            if (a instanceof FormGroup) dfl.angularFormGroup=a;
+            // todo ?pop dfl
+        });
+        return angularFormGroup;
+    }
+
+    private addLayoutGroups(model: DynamicFormControlModel, formGroup: { [p: string]: AbstractControl },parent: DynamicPathable) {
+        model.parent=parent;
+        let formLayoutGroupModel = model as DynamicFormLayoutGroupModel;
+        this.dynamicFormLayoutGroupModels.push(formLayoutGroupModel);
+        formLayoutGroupModel.layoutGroup.forEach((dfc: DynamicFormControlModel) => {
+            dfc.parent = parent;
+            if(dfc.type===DYNAMIC_FORM_CONTROL_TYPE_LAYOUT_GROUP){
+                this.addLayoutGroups(dfc,formGroup,parent);
+            }else if (dfc.type === DYNAMIC_FORM_CONTROL_TYPE_GROUP || dfc.type === DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX_GROUP) {
+
+                let formGroupModel = dfc as DynamicFormGroupModel,
+                    extra = this.createExtra(formGroupModel.validator, formGroupModel.asyncValidator);
+
+                formGroup[dfc.id] = this.createFormGroup(formGroupModel.group, extra, formGroupModel);
+
+            }else {
+
+                let formControlModel = dfc as DynamicFormValueControlModel<DynamicFormControlValue>;
+                formGroup[formControlModel.id] = new FormControl(
+                    {
+                        value: formControlModel.value,
+                        disabled: formControlModel.disabled
+                    },
+                    Validators.compose(this.validationService.getValidators(formControlModel.validators)),
+                    Validators.composeAsync(this.validationService.getAsyncValidators(formControlModel.asyncValidators))
+                );
+            }
+        });
     }
 
 
@@ -294,6 +338,9 @@ export class DynamicFormService {
 
                     if (controlModel instanceof DynamicFormGroupModel) {
                         findByIdFn(id, (controlModel as DynamicFormGroupModel).group);
+                    }
+                    if (controlModel instanceof DynamicFormLayoutGroupModel ) {
+                        findByIdFn(id, (controlModel as DynamicFormLayoutGroupModel).layoutGroup);
                     }
                 }
             };

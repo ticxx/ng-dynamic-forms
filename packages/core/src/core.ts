@@ -31,6 +31,8 @@ export * from "./model/switch/dynamic-switch.model";
 export * from "./model/textarea/dynamic-textarea.model";
 export * from "./model/timepicker/dynamic-timepicker.model";
 
+export * from "./model/form-layout-group/dynamic-form-layout-group.model";
+
 export * from "./service/dynamic-form.service";
 export * from "./service/dynamic-form-validation.service";
 
