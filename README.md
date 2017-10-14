@@ -7,16 +7,12 @@ This fork adds experimental support for bootstap cards and ng-bootstrap tabs.
 [![npm version](https://badge.fury.io/js/%40ng-dynamic-forms%2Fcore.svg)](https://badge.fury.io/js/%40ng-dynamic-forms%2Fcore)
 [![Build Status](https://travis-ci.org/udos86/ng-dynamic-forms.svg?branch=master)](https://travis-ci.org/udos86/ng-dynamic-forms)
 [![Coverage Status](https://coveralls.io/repos/github/udos86/ng-dynamic-forms/badge.svg)](https://coveralls.io/github/udos86/ng-dynamic-forms)
+[![DeepScan Grade](https://deepscan.io/api/projects/562/branches/912/badge/grade.svg)](https://deepscan.io/dashboard/#view=project&pid=562&bid=912)
 [![Downloads](http://img.shields.io/npm/dm/@ng2-dynamic-forms/core.svg)](https://npmjs.org/package/@ng2-dynamic-forms/core)
 ***
 :bangbang:09-14-2017: **@ng2-dynamic-forms has been renamed to @ng-dynamic-forms**:bangbang:
 ***
-**Please update your dependencies**:
-```
-npm uninstall @ng2-dynamic-forms/core @ng2-dynamic-forms/ui-<package_name> -S
-npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
-```
-***
+
 
 NG Dynamic Forms is a **rapid form development library** based on the official Angular
 [**dynamic forms guide**](https://angular.io/docs/ts/latest/cookbook/dynamic-form.html).
@@ -38,6 +34,7 @@ and the [**API documentation**](http://ng2-dynamic-forms.udos86.de/docs/)!
 - [Form Groups](#form-groups)
 - [Form Arrays](#form-arrays)
 - [Form Layouts](#form-layouts)
+- [Form Control Events](#form-control-events)
 - [Custom Templates](#custom-templates)
 - [Custom Validators](#custom-validators)
 - [Validation Messaging](#validation-messaging)
@@ -281,7 +278,7 @@ varies among UI packages. **See the following compatibility table**:
 | Slider         	|    ***   	|      ***     	|      ***      	|     ✓    	|     ✓    	|      ✓      	|       ***       	|      ✓     	|
 | Switch         	|     ✗    	|       ✗      	|       ✓       	|     ✓    	|     ✓    	|      ✓      	|        ✗        	|      ✓     	|
 | Textarea       	|     ✓    	|       ✓      	|       ✓       	|     ✓    	|     ✓    	|      ✓      	|        ✓        	|      ✓     	|
-| TimePicker     	|     *    	|       *      	|       *       	|     ✓    	|     ✓    	|      *      	|        ✓        	|      ✓     	|
+| Timepicker     	|     *    	|       *      	|       *       	|     ✓    	|     ✓    	|      *      	|        ✓        	|      ✓     	|
 
 **\*)** datetime controls can be achieved using a `DynamicInputModel` with `inputType: "date"` or `inputType: "time"`
 
@@ -541,9 +538,61 @@ new DynamicInputModel(
 ```
 
 
+## Form Control Events
+
+When developing forms it's often useful to keep track of certain events that occur on a specific form control. 
+
+With NG Dynamic Forms you can directly bind the three most common events, `blur`, `change` and `focus`, both on `DynamicFormControlComponent` and `DynamicFormComponent`:
+```ts
+<dynamic-material-form [group]="formGroup"
+                       [model]="formModel"
+                       (blur)="onBlur($event)"
+                       (change)="onChange($event)"
+                       (focus)="onFocus($event)"></dynamic-material-form>
+```
+```ts
+<form [formGroup]="myFormGroup">
+
+    <dynamic-material-form-control *ngFor="let controlModel of myFormModel"
+                                   [group]="myFormGroup"
+                                   [model]="controlModel"
+                                   (blur)="onBlur($event)"
+                                   (change)="onChange($event)"
+                                   (focus)="onFocus($event)"></dynamic-material-form-control>
+</form>
+```
+
+The object passed to your handler function gives you any control and model information needed for further processing.
+
+The `$event` property even grants access to the original event:
+
+```ts
+interface DynamicFormControlEvent {
+
+    $event: Event | FocusEvent | DynamicFormControlEvent | any;
+    context: DynamicFormArrayGroupModel | null;
+    control: FormControl;
+    group: FormGroup;
+    model: DynamicFormControlModel;
+    type: string;
+}
+```
+  
+But when using a UI library usually there are a bunch of additional events provided for certain form control components.
+
+Of course, NG Dynamic Forms won't also let you down here.
+
+All custom UI events are pooled by an individual `@Output()` utilizing the respective library prefix.    
+```ts
+<dynamic-material-form [group]="formGroup"
+                       [model]="formModel"
+                       (matEvent)="onMatEvent($event)"></dynamic-material-form>
+```
+
+
 ## Custom Templates
 
-As mentioned above, NG Dynamic Forms already gives you a lot of freedom in adjusting your form layout via CSS classes. 
+As already mentioned, NG Dynamic Forms gives you a lot of freedom in adjusting your form layout via CSS classes. 
 
 However there are situations where you would like to add custom markup for some of your form controls, as well. 
 

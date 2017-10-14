@@ -6,7 +6,10 @@
 
             <dynamic-material-form [group]="formGroup"
                                    [model]="formModel"
-                                   (change)="onChange($event)"></dynamic-material-form>
+                                   (blur)="onBlur($event)"
+                                   (change)="onChange($event)"
+                                   (focus)="onFocus($event)"
+                                   (matEvent)="onMatEvent($event)"></dynamic-material-form>
 
         </form>
 

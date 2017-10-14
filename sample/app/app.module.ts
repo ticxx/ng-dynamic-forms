@@ -6,7 +6,7 @@ import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { LocationStrategy, HashLocationStrategy } from "@angular/common";
 import { ReactiveFormsModule, NG_VALIDATORS } from "@angular/forms";
-import {NgbDatepickerModule, NgbTabsetModule, NgbTimepickerModule} from "@ng-bootstrap/ng-bootstrap";
+import { NgbDatepickerModule, NgbTabsetModule, NgbTimepickerModule } from "@ng-bootstrap/ng-bootstrap";
 //import { BsDatepickerModule } from "ngx-bootstrap";
 
 import { DynamicFormsCoreModule } from "@ng-dynamic-forms/core";
@@ -88,6 +88,11 @@ export function mockBackendFactory(mockBackend: MockBackend, baseRequestOptions:
         {
             provide: NG_VALIDATORS,
             useValue: customDateRangeValidator,
+            multi: true
+        },
+        {
+            provide: NG_ASYNC_VALIDATORS,
+            useValue: customAsyncFormGroupValidator,
             multi: true
         },
         {

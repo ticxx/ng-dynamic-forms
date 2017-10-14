@@ -76,6 +76,7 @@ export class DynamicMaterialFormControlComponent extends DynamicFormControlCompo
     @Output() blur: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
     @Output() change: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
     @Output() focus: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
+    @Output("matEvent") customEvent: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
 
     @ViewChild(MAT_VIEW_CHILD_SELECTOR) matViewChild: MatFormControlComponent | undefined;
     @ViewChild(MatInput) matInput: MatInput | undefined;
@@ -98,6 +99,10 @@ export class DynamicMaterialFormControlComponent extends DynamicFormControlCompo
 
     get characterCount(): number | null {
         return this.matInput ? this.matInput.value.length : null;
+    }
+
+    get asMatFormField(): boolean {
+        return this.type === 5 || this.type === 7 || this.type === 10;
     }
 
     static getFormControlType(model: DynamicFormControlModel): MatFormControlType | null {

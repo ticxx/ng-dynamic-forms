@@ -26,14 +26,7 @@ import {
     DynamicTimePickerModel
 } from "@ng-dynamic-forms/core";
 import { DynamicKendoFormControlComponent } from "./dynamic-kendo-form-control.component";
-import {
-    KENDO_AUTOCOMPLETE_TEMPLATE_DIRECTIVES,
-    KENDO_CALENDAR_TEMPLATE_DIRECTIVES,
-    KENDO_DROPDOWN_LIST_TEMPLATE_DIRECTIVES,
-    KENDO_MULTI_SELECT_TEMPLATE_DIRECTIVES,
-    KENDO_UPLOAD_TEMPLATE_DIRECTIVES,
-    KendoFormControlType
-} from "./dynamic-kendo-form.const";
+import { KendoFormControlType } from "./dynamic-kendo-form.const";
 
 describe("DynamicFormKendoComponent test suite", () => {
 
@@ -118,7 +111,8 @@ describe("DynamicFormKendoComponent test suite", () => {
         expect(component.focus).toBeDefined();
 
         expect(component.onValueChange).toBeDefined();
-        expect(component.onFocusChange).toBeDefined();
+        expect(component.onBlurEvent).toBeDefined();
+        expect(component.onFocusEvent).toBeDefined();
 
         expect(component.isValid).toBe(true);
         expect(component.isInvalid).toBe(false);
@@ -131,22 +125,22 @@ describe("DynamicFormKendoComponent test suite", () => {
         expect(component.kendoViewChild).toBeDefined();
     });
 
-    it("should listen to focus events", () => {
+    it("should listen to native blur events", () => {
 
-        spyOn(component, "onFocus").and.callThrough();
-
-        testElement.triggerEventHandler("focus", null);
-
-        expect(component.onFocus).toHaveBeenCalled();
-    });
-
-    it("should listen to blur events", () => {
-
-        spyOn(component, "onBlur").and.callThrough();
+        spyOn(component, "onBlurEvent");
 
         testElement.triggerEventHandler("blur", null);
 
-        expect(component.onBlur).toHaveBeenCalled();
+        expect(component.onBlurEvent).toHaveBeenCalled();
+    });
+
+    it("should listen to native focus events", () => {
+
+        spyOn(component, "onFocusEvent");
+
+        testElement.triggerEventHandler("focus", null);
+
+        expect(component.onFocusEvent).toHaveBeenCalled();
     });
 
     it("should listen to native change event", () => {
@@ -235,10 +229,5 @@ describe("DynamicFormKendoComponent test suite", () => {
         expect(testFn(formModel[12])).toEqual(KendoFormControlType.TextArea);
 
         expect(testFn(formModel[13])).toEqual(KendoFormControlType.TimePicker);
-    });
-
-    xit("should determine correct form control template directive", () => {
-
-        let testFn = DynamicKendoFormControlComponent.getTemplateDirectives;
     });
 });

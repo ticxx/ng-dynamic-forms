@@ -33,13 +33,15 @@ export interface DynamicFormControlEvent {
     control: FormControl;
     group: FormGroup;
     model: DynamicFormControlModel;
+    type: string;
 }
 
 export enum DynamicFormControlEventType {
 
-    Blur = 0,
-    Change = 1,
-    Focus = 2
+    Blur = 1,
+    Change = 2,
+    Focus = 3,
+    Custom = 4
 }
 
 export abstract class DynamicFormControlComponent implements OnChanges, OnInit, AfterViewInit, OnDestroy {
@@ -58,8 +60,8 @@ export abstract class DynamicFormControlComponent implements OnChanges, OnInit, 
 
     blur: EventEmitter<DynamicFormControlEvent>;
     change: EventEmitter<DynamicFormControlEvent>;
-    //filter: EventEmitter<DynamicFormControlEvent>;
     focus: EventEmitter<DynamicFormControlEvent>;
+    customEvent: EventEmitter<DynamicFormControlEvent>;
 
     private subscriptions: Subscription[] = [];
 
@@ -151,6 +153,10 @@ export abstract class DynamicFormControlComponent implements OnChanges, OnInit, 
         return this.inputTemplates ? this.inputTemplates : this.contentTemplates;
     }
 
+    protected getEvent($event: any, type: string): DynamicFormControlEvent {
+        return {$event, context: this.context, control: this.control, group: this.group, model: this.model, type};
+    }
+
     protected setTemplates(): void {
 
         this.templates.forEach((template: DynamicTemplateDirective) => {
@@ -214,6 +220,7 @@ export abstract class DynamicFormControlComponent implements OnChanges, OnInit, 
         value ? this.control.disable() : this.control.enable();
     }
 
+
     onValueChange($event: Event | DynamicFormControlEvent | any): void {
 
         if ($event && $event instanceof Event) { // native HTML5 change event
@@ -232,73 +239,64 @@ export abstract class DynamicFormControlComponent implements OnChanges, OnInit, 
                 }
             }
 
-            this.change.emit(
-                {
-                    $event: $event as Event,
-                    context: this.context,
-                    control: this.control,
-                    group: this.group,
-                    model: this.model
-                }
-            );
+            this.change.emit(this.getEvent($event as Event, "change"));
 
-        } else if ($event && $event.hasOwnProperty("$event") && $event.hasOwnProperty("control") && $event.hasOwnProperty("model")) {
+        } else if ($event && $event.hasOwnProperty("$event")) { // event bypass
 
             this.change.emit($event as DynamicFormControlEvent);
 
-        } else {
+        } else { // custom library value change event
 
-            this.change.emit(
-                {
-                    $event: $event,
-                    context: this.context,
-                    control: this.control,
-                    group: this.group,
-                    model: this.model
-                }
-            );
+            this.change.emit(this.getEvent($event, "change"));
         }
     }
 
-    onFilterChange(_$event: any | DynamicFormControlEvent): void {
-        // TODO
-    }
 
-    onFocusChange($event: FocusEvent | DynamicFormControlEvent): void {
+    onBlurEvent($event: FocusEvent | DynamicFormControlEvent | any): void {
 
-        let emitValue;
+        if ($event && $event.hasOwnProperty("$event")) {
 
-        if ($event instanceof FocusEvent) {
-
-            $event.stopPropagation();
-
-            emitValue = {
-                $event: $event,
-                context: this.context,
-                control: this.control,
-                group: this.group,
-                model: this.model
-            };
-
-            if ($event.type === "focus") {
-
-                this.hasFocus = true;
-                this.focus.emit(emitValue);
-
-            } else {
-
-                this.hasFocus = false;
-                this.blur.emit(emitValue);
-            }
+            this.blur.emit($event as DynamicFormControlEvent);
 
         } else {
 
-            emitValue = $event as DynamicFormControlEvent;
-
-            if (emitValue.$event && emitValue.$event instanceof FocusEvent) {
-
-                emitValue.$event.type === "focus" ? this.focus.emit(emitValue) : this.blur.emit(emitValue);
+            if ($event instanceof FocusEvent) {
+                $event.stopPropagation();
             }
+
+            this.hasFocus = false;
+            this.blur.emit(this.getEvent($event, "blur"));
+        }
+    }
+
+
+    onFocusEvent($event: FocusEvent | DynamicFormControlEvent | any): void {
+
+        if ($event && $event.hasOwnProperty("$event")) {
+
+            this.focus.emit($event as DynamicFormControlEvent);
+
+        } else {
+
+            if ($event instanceof FocusEvent) {
+                $event.stopPropagation();
+            }
+
+            this.hasFocus = true;
+            this.focus.emit(this.getEvent($event, "focus"));
+        }
+    }
+
+
+    onCustomEvent($event: any, type: string | null = null): void {
+
+        if ($event && $event.hasOwnProperty("$event") && $event.hasOwnProperty("type")) { // child event bypass
+
+            this.customEvent.emit($event as DynamicFormControlEvent);
+
+        } else { // native UI library custom event
+
+            this.customEvent.emit(this.getEvent($event, type));
         }
     }
 }

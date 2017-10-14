@@ -29,9 +29,10 @@
                                                [model]="controlModel"
                                                [templates]="templates"
                                                [ngClass]="[controlModel.cls.element.host, controlModel.cls.grid.host]"
-                                               (blur)="onFocusChange($event)"
+                                               (blur)="onBlurEvent($event)"
                                                (change)="onValueChange($event)"
-                                               (focus)="onFocusChange($event)"></dynamic-material-form-control>
+                                               (focus)="onFocusEvent($event)"
+                                               (matEvent)="onCustomEvent($event)"></dynamic-material-form-control>
 
                 <ng-container *ngTemplateOutlet="template?.templateRef; context: groupModel"></ng-container>
 
@@ -48,13 +49,17 @@
                       [labelPosition]="model.labelPosition"
                       [name]="model.name"
                       [ngClass]="[model.cls.element.control, model.cls.grid.control]"
-                      (blur)="onFocusChange($event)"
+                      (blur)="onBlurEvent($event)"
                       (change)="onValueChange($event)"
-                      (focus)="onFocusChange($event)"><span [ngClass]="model.cls.element.label"
-                                                            [innerHTML]="model.label"></span></mat-checkbox>
+                      (focus)="onFocusEvent($event)"
+                      (indeterminateChange)="onMatEvent($event, 'indeterminateChange')">
+
+            <span [ngClass]="model.cls.element.label" [innerHTML]="model.label"></span>
+
+        </mat-checkbox>
 
 
-        <mat-form-field *ngSwitchCase="3" [ngClass]="[model.cls.element.control, model.cls.grid.control]">
+        <mat-form-field *ngSwitchCase="3" [ngClass]="model.cls.grid.control">
 
             <input matInput
                    [autofocus]="model.autoFocus"
@@ -64,19 +69,18 @@
                    [matDatepicker]="matDatepicker"
                    [min]="model.min"
                    [name]="model.name"
+                   [ngClass]="model.cls.element.control"
                    [placeholder]="model.placeholder"
                    [readonly]="model.readOnly"
                    [required]="model.required"
-                   (blur)="onFocusChange($event)"
-                   (change)="onValueChange($event)"
-                   (focus)="onFocusChange($event)"/>
+                   (blur)="onBlurEvent($event)"
+                   (dateChange)="onValueChange($event)"
+                   (dateInput)="onCustomEvent($event, 'dateInput')"
+                   (focus)="onFocusEvent($event)"/>
 
             <mat-datepicker-toggle matSuffix [for]="matDatepicker"></mat-datepicker-toggle>
 
-            <mat-datepicker #matDatepicker
-                            [startAt]="model.focusedDate"
-                            [touchUi]="true"
-                            (selectedChanged)="onValueChange($event)"></mat-datepicker>
+            <mat-datepicker #matDatepicker [startAt]="model.focusedDate" [touchUi]="true"></mat-datepicker>
 
         </mat-form-field>
 
@@ -92,15 +96,16 @@
                                            [model]="controlModel"
                                            [templates]="templates"
                                            [ngClass]="[controlModel.cls.element.host, controlModel.cls.grid.host]"
-                                           (blur)="onFocusChange($event)"
+                                           (blur)="onBlurEvent($event)"
                                            (change)="onValueChange($event)"
-                                           (focus)="onFocusChange($event)"></dynamic-material-form-control>
+                                           (focus)="onFocusEvent($event)"
+                                           (matEvent)="onCustomEvent($event)"></dynamic-material-form-control>
         </div>
 
 
         <ng-container *ngSwitchCase="5">
 
-            <mat-form-field #matInput [ngClass]="model.cls.grid.control">
+            <mat-form-field [ngClass]="model.cls.grid.control">
 
                 <span *ngIf="model.prefix" matPrefix [innerHTML]="model.prefix"></span>
 
@@ -127,9 +132,9 @@
                        [required]="model.required"
                        [spellcheck]="model.spellCheck"
                        [type]="model.inputType"
-                       (blur)="onFocusChange($event)"
+                       (blur)="onBlurEvent($event)"
                        (change)="onValueChange($event)"
-                       (focus)="onFocusChange($event)"/>
+                       (focus)="onFocusEvent($event)"/>
 
                 <span *ngIf="model.suffix" matSuffix [innerHTML]="model.suffix"></span>
 
@@ -141,7 +146,7 @@
 
             </mat-form-field>
 
-            <mat-autocomplete #matAutocomplete="matAutocomplete">
+            <mat-autocomplete #matAutocomplete="matAutocomplete" (optionSelected)="onValueChange($event)">
 
                 <mat-option *ngFor="let option of model.list" [value]="option">{{ option }}</mat-option>
 
@@ -155,9 +160,9 @@
                          [formControlName]="model.id"
                          [name]="model.name"
                          [ngClass]="[model.cls.element.control, model.cls.grid.control]"
-                         (blur)="onFocusChange($event)"
+                         (blur)="onBlurEvent($event)"
                          (change)="onValueChange($event)"
-                         (focus)="onFocusChange($event)">
+                         (focus)="onFocusEvent($event)">
 
             <mat-radio-button *ngFor="let option of model.options$ | async"
                               [labelPosition]="'after'"
@@ -168,19 +173,25 @@
         </mat-radio-group>
 
 
-        <mat-select *ngSwitchCase="7" #matSelect
-                    [dynamicId]="bindId && model.id"
-                    [formControlName]="model.id"
-                    [multiple]="model.multiple"
-                    [ngClass]="[model.cls.element.control, model.cls.grid.control]"
-                    [placeholder]="model.placeholder"
-                    (change)="onValueChange($event)">
+        <mat-form-field *ngSwitchCase="7" [ngClass]="model.cls.grid.control">
 
-            <mat-option *ngFor="let option of model.options$ | async"
-                        [ngClass]="model.cls.element.option"
-                        [value]="option.value"><span [innerHTML]="option.label"></span></mat-option>
+            <mat-select #matSelect
+                        [dynamicId]="bindId && model.id"
+                        [formControlName]="model.id"
+                        [multiple]="model.multiple"
+                        [ngClass]="model.cls.element.control"
+                        [placeholder]="model.placeholder"
+                        [required]="model.required"
+                        (change)="onValueChange($event)"
+                        (onClose)="onCustomEvent($event, 'onClose')"
+                        (onOpen)="onCustomEvent($event, 'onOpen')">
 
-        </mat-select>
+                <mat-option *ngFor="let option of model.options$ | async"
+                            [ngClass]="model.cls.element.option"
+                            [value]="option.value"><span [innerHTML]="option.label"></span></mat-option>
+            </mat-select>
+
+        </mat-form-field>
 
 
         <mat-slider *ngSwitchCase="8" #matSlider
@@ -193,7 +204,8 @@
                     [thumbLabel]="true"
                     tickInterval="1"
                     [vertical]="model.vertical"
-                    (change)="onValueChange($event)"></mat-slider>
+                    (change)="onValueChange($event)"
+                    (input)="onCustomEvent($event, 'input')"></mat-slider>
 
 
         <mat-slide-toggle *ngSwitchCase="9" #matSlideToggle
@@ -211,7 +223,7 @@
         </mat-slide-toggle>
 
 
-        <mat-form-field *ngSwitchCase="10" #matTextarea [ngClass]="model.cls.grid.control">
+        <mat-form-field *ngSwitchCase="10" [ngClass]="model.cls.grid.control">
 
             <textarea matInput
                       [attr.tabindex]="model.tabIndex"
@@ -228,9 +240,9 @@
                       [rows]="model.rows"
                       [spellcheck]="model.spellCheck"
                       [wrap]="model.wrap"
-                      (blur)="onFocusChange($event)"
+                      (blur)="onBlurEvent($event)"
                       (change)="onValueChange($event)"
-                      (focus)="onFocusChange($event)"></textarea>
+                      (focus)="onFocusEvent($event)"></textarea>
 
             <mat-hint *ngIf="model.hint" align="start" [innerHTML]="model.hint"></mat-hint>
             <mat-hint *ngIf="showCharacterHint" align="end">{{characterCount}} / {{model.maxLength}}</mat-hint>
@@ -251,5 +263,7 @@
     <ng-container *ngIf="type !== 1 && template?.align === 'END'">
         <ng-container *ngTemplateOutlet="template?.templateRef; context: model"></ng-container>
     </ng-container>
+
+    <ng-content></ng-content>
 
 </div>

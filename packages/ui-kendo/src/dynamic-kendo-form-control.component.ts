@@ -83,6 +83,7 @@ export class DynamicKendoFormControlComponent extends DynamicFormControlComponen
     @Output() blur: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
     @Output() change: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
     @Output() focus: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
+    @Output("kendoEvent") customEvent: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
 
     @ViewChild(KENDO_VIEW_CHILD_SELECTOR) kendoViewChild: KendoFormControlComponent | undefined;
 
@@ -124,32 +125,6 @@ export class DynamicKendoFormControlComponent extends DynamicFormControlComponen
         this.templates
             .filter(directive => typeof directive.as === "string" && directive.as.startsWith("kendo"))
             .forEach(directive => this.setTemplateDirective(directive));
-    }
-
-    onFocus($event: null): void {
-
-        this.focus.emit(
-            {
-                $event: $event,
-                context: this.context,
-                control: this.control,
-                group: this.group,
-                model: this.model
-            }
-        );
-    }
-
-    onBlur($event: null): void {
-
-        this.blur.emit(
-            {
-                $event: $event,
-                context: this.context,
-                control: this.control,
-                group: this.group,
-                model: this.model
-            }
-        );
     }
 
     static getFormControlType(model: DynamicFormControlModel): KendoFormControlType | null {

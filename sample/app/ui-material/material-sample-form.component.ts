@@ -21,7 +21,19 @@ export class MaterialSampleFormComponent implements OnInit {
         this.formGroup = this.formService.createFormGroup(this.formModel);
     }
 
+    onBlur($event) {
+        console.log(`Material blur event on: ${$event.model.id}: `, $event);
+    }
+
     onChange($event) {
         console.log(`Material change event on: ${$event.model.id}: `, $event);
+    }
+
+    onFocus($event) {
+        console.log(`Material focus event on: ${$event.model.id}: `, $event);
+    }
+
+    onMatEvent($event) {
+        console.log(`Material ${$event.type} event on: ${$event.model.id}: `, $event);
     }
 }
