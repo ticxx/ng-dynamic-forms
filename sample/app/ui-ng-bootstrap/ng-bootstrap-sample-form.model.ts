@@ -420,7 +420,18 @@ new DynamicFormGroupModel(
             id: "notes",
             label: "Personal Note",
             placeholder: "Personal Note",
-            rows: 5
+            rows: 5,
+            relation: [
+            {
+                action: "DISABLE",
+                when: [
+                    {
+                        id: "confirm",
+                        value: false
+                    }
+                ]
+            }
+        ]
         },
         {
             element: {

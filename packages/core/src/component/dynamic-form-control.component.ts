@@ -186,8 +186,9 @@ export abstract class DynamicFormControlComponent implements OnChanges, OnInit, 
     }
 
     updateModelDisabled(relation: DynamicFormControlRelationGroup): void {
-
-        this.model.disabledUpdates.next(RelationUtils.isFormControlToBeDisabled(relation, this.group));
+        const disable: boolean= RelationUtils.isFormControlToBeDisabled(relation, this.group);
+        if (disable) this.control.setValue(null);
+        this.model.disabledUpdates.next(disable);
     }
 
     unsubscribe(): void {
