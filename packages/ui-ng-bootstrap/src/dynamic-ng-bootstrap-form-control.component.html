@@ -156,9 +156,9 @@
                                                                [model]="controlModel"
                                                                [templates]="templates"
                                                                [ngClass]="[controlModel.cls.element.host, controlModel.cls.grid.host]"
-                                                               (blur)="onFocusChange($event)"
+                                                               (blur)="onBlurEvent($event)"
                                                                (change)="onValueChange($event)"
-                                                               (focus)="onFocusChange($event)">
+                                                               (focus)="onFocusEvent($event)">
                             </dynamic-ng-bootstrap-form-control>
                         </ng-template>
                     </ngb-tab>
@@ -301,9 +301,9 @@
                                                        [model]="controlModel"
                                                        [templates]="templates"
                                                        [ngClass]="[controlModel.cls.element.host, controlModel.cls.grid.host]"
-                                                       (blur)="onFocusChange($event)"
+                                                       (blur)="onBlurEvent($event)"
                                                        (change)="onValueChange($event)"
-                                                       (focus)="onFocusChange($event)">
+                                                       (focus)="onFocusEvent($event)">
                     </dynamic-ng-bootstrap-form-control>
 
                 </div>
@@ -326,9 +326,9 @@
                                                        [model]="controlModel"
                                                        [templates]="templates"
                                                        [ngClass]="[controlModel.cls.element.host, controlModel.cls.grid.host]"
-                                                       (blur)="onFocusChange($event)"
+                                                       (blur)="onBlurEvent($event)"
                                                        (change)="onValueChange($event)"
-                                                       (focus)="onFocusChange($event)"></dynamic-ng-bootstrap-form-control>
+                                                       (focus)="onFocusEvent($event)"></dynamic-ng-bootstrap-form-control>
                 </div>
             </div>
 
