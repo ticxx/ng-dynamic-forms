@@ -57,6 +57,10 @@ export interface DynamicFormControlModelConfig {
     id?: string;
     label?: string;
     relation?: DynamicFormControlRelationGroup[];
+    tooltip?: string;
+    helpId?: string;
+    anforderungsstufe?: string;
+
 }
 
 export abstract class DynamicFormControlModel implements DynamicPathable {
@@ -72,6 +76,10 @@ export abstract class DynamicFormControlModel implements DynamicPathable {
     @serializable() relation: DynamicFormControlRelationGroup[];
 
     abstract readonly type: string;
+
+    @serializable() tooltip: string | null;
+    @serializable() helpId: string | null;
+    @serializable() anforderungsstufe: string | null;
 
     constructor(config: DynamicFormControlModelConfig, cls: ClsConfig = {}) {
 
@@ -92,6 +100,10 @@ export abstract class DynamicFormControlModel implements DynamicPathable {
 
         this.disabledUpdates = new Subject<boolean>();
         this.disabledUpdates.subscribe((value: boolean) => this.disabled = value);
+
+        this.tooltip = config.tooltip || null;
+        this.helpId = config.helpId || null;
+        this.anforderungsstufe = config.anforderungsstufe || null;
     }
 
     get disabled(): boolean {
