@@ -5,14 +5,16 @@
     <label
            [attr.for]="model.id"
            [innerHTML]="model.label"
+           (click)="onCustomEvent($event, 'onShowHilfe')"
            [ngClass]="[model.cls.element.label, model.cls.grid.label]"></label>
-        <button *ngIf="model.helpId"
-                (click)="onCustomEvent($event, 'onShowHilfe')"
-                type="button"
-                ngbTooltip="Ausführliche Hilfe"
-                class="btn btn-sm btn-outline-info">
-            <i class="fa fa-info"></i>
-        </button>
+
+        <!--<button *ngIf="model.helpId"-->
+                <!--(click)="onCustomEvent($event, 'onShowHilfe')"-->
+                <!--type="button"-->
+                <!--ngbTooltip="Ausführliche Hilfe"-->
+                <!--class="btn btn-sm btn-outline-info">-->
+            <!--<i class="fa fa-info"></i>-->
+        <!--</button>-->
     </ng-container>
 
     <ng-container *ngIf="type !== 1 && template?.align === 'START'">
