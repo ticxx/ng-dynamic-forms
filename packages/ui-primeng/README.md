@@ -40,6 +40,7 @@ with **`DynamicPrimeNGFormControlComponent`**:
                                   [model]="controlModel"></dynamic-primeng-form-control>
 </form>
 ```
+
 ## Form Controls
 
 |                                 Control                                 	|                        Model                       	|   Required Property   	|
@@ -48,6 +49,7 @@ with **`DynamicPrimeNGFormControlComponent`**:
 |      **[Calendar](https://www.primefaces.org/primeng/#/calendar)**      	| `DynamicDatePickerModel`, `DynamicTimePickerModel` 	|           –           	|
 |      **[Checkbox](https://www.primefaces.org/primeng/#/checkbox)**      	| `DynamicCheckboxModel`                             	|           –           	|
 |         **[Chips](https://www.primefaces.org/primeng/#/chips)**         	| `DynamicInputModel`                                	|    `multiple: true`   	|
+|   **[ColorPicker](https://www.primefaces.org/primeng/#/colorpicker)**   	| `DynamicColorPickerModel`                          	|           –            	|
 |      **[Dropdown](https://www.primefaces.org/primeng/#/dropdown)**      	| `DynamicSelectModel`                               	|           –           	|
 |        **[Editor](https://www.primefaces.org/primeng/#/editor)**        	| `DynamicEditorModel`                               	|           –           	|
 |     **[InputMask](https://www.primefaces.org/primeng/#/inputmask)**     	| `DynamicInputModel`                                	|         `mask`        	|
@@ -70,6 +72,7 @@ with **`DynamicPrimeNGFormControlComponent`**:
 </form>
 ```
 
-## Sample
+## Resources
 
-[**Live Demo**](http://ng2-dynamic-forms.udos86.de/sample/index.aot.html#primeng-sample-form) 
+* [**API Documentation**](http://ng2-dynamic-forms.udos86.de/docs/ui-primeng/)
+* [**Live Sample**](http://ng2-dynamic-forms.udos86.de/sample/index.aot.html#primeng-sample-form) 

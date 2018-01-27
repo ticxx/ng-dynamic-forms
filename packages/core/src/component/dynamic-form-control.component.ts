@@ -13,18 +13,26 @@ import { FormControl, FormGroup } from "@angular/forms";
 import { Subscription } from "rxjs/Subscription";
 import { DynamicFormControlModel } from "../model/dynamic-form-control.model";
 import { DynamicFormValueControlModel, DynamicFormControlValue } from "../model/dynamic-form-value-control.model";
-import { DynamicFormControlRelationGroup } from "../model/dynamic-form-control-relation.model";
-import { DynamicFormArrayGroupModel } from "../model/form-array/dynamic-form-array.model";
+import {
+    DynamicFormArrayGroupModel,
+    DYNAMIC_FORM_CONTROL_TYPE_ARRAY
+} from "../model/form-array/dynamic-form-array.model";
 import {
     DynamicInputModel,
     DYNAMIC_FORM_CONTROL_TYPE_INPUT,
     DYNAMIC_FORM_CONTROL_INPUT_TYPE_FILE
 } from "../model/input/dynamic-input.model";
-import { DynamicTemplateDirective } from "../directive/dynamic-template.directive";
-import { Utils } from "../utils/core.utils";
-import { RelationUtils } from "../utils/relation.utils";
+import { DynamicFormControlLayout } from "../model/misc/dynamic-form-control-layout.model";
+import { DynamicFormControlRelationGroup } from "../model/misc/dynamic-form-control-relation.model";
+import {
+    DYNAMIC_TEMPLATE_DIRECTIVE_ALIGN_END,
+    DYNAMIC_TEMPLATE_DIRECTIVE_ALIGN_START,
+    DynamicTemplateDirective
+} from "../directive/dynamic-template.directive";
+import { DynamicFormLayout, DynamicFormLayoutService } from "../service/dynamic-form-layout.service";
 import { DynamicFormValidationService } from "../service/dynamic-form-validation.service";
 import { DynamicFormLayoutGroupModel } from "../model/form-layout-group/dynamic-form-layout-group.model";
+import { RelationUtils } from "../utils/relation.utils";
 
 export interface DynamicFormControlEvent {
 
@@ -36,13 +44,12 @@ export interface DynamicFormControlEvent {
     type: string;
 }
 
-export enum DynamicFormControlEventType {
+export const DYNAMIC_FORM_CONTROL_EVENT_TYPE_BLUR = "blur";
+export const DYNAMIC_FORM_CONTROL_EVENT_TYPE_CHANGE = "change";
+export const DYNAMIC_FORM_CONTROL_EVENT_TYPE_FOCUS = "focus";
+export const DYNAMIC_FORM_CONTROL_EVENT_TYPE_CUSTOM = "custom";
 
-    Blur = 1,
-    Change = 2,
-    Focus = 3,
-    Custom = 4
-}
+export enum DynamicFormControlComponentTemplatePosition {start = 0, end, array}
 
 export abstract class DynamicFormControlComponent implements OnChanges, OnInit, AfterViewInit, OnDestroy {
 
@@ -52,11 +59,12 @@ export abstract class DynamicFormControlComponent implements OnChanges, OnInit, 
     group: FormGroup;
     hasErrorMessaging: boolean = false;
     hasFocus: boolean;
+    layout: DynamicFormLayout;
     model: DynamicFormControlModel;
 
-    contentTemplates: QueryList<DynamicTemplateDirective>;
-    inputTemplates: QueryList<DynamicTemplateDirective> | null = null;
-    template: DynamicTemplateDirective;
+    contentTemplateList: QueryList<DynamicTemplateDirective>;
+    inputTemplateList: QueryList<DynamicTemplateDirective> | null = null;
+    templates: DynamicTemplateDirective[] = [];
 
     blur: EventEmitter<DynamicFormControlEvent>;
     change: EventEmitter<DynamicFormControlEvent>;
@@ -67,7 +75,7 @@ export abstract class DynamicFormControlComponent implements OnChanges, OnInit, 
 
     abstract type: number | string | null;
 
-    constructor(protected changeDetectorRef: ChangeDetectorRef,
+    constructor(protected changeDetectorRef: ChangeDetectorRef, protected layoutService: DynamicFormLayoutService,
                 protected validationService: DynamicFormValidationService) { }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -103,33 +111,28 @@ export abstract class DynamicFormControlComponent implements OnChanges, OnInit, 
         }
     }
 
-    ngOnInit(): void {
+    ngOnInit() {
 
-        if (!Utils.isDefined(this.model) || !Utils.isDefined(this.group)) {
+        if (!this.model && !this.group) {
             throw new Error(`no [model] or [group] input set for DynamicFormControlComponent`);
         }
     }
 
-    ngAfterViewInit(): void {
+    ngAfterViewInit() {
 
         this.setTemplates();
         this.changeDetectorRef.detectChanges();
     }
 
-    ngOnDestroy(): void {
+    ngOnDestroy() {
         this.unsubscribe();
     }
 
     get errorMessages(): string[] {
-
-        if (this.hasErrorMessaging && this.model.hasErrorMessages) {
-            return this.validationService.createErrorMessages(this.control, this.model);
-        }
-
-        return [];
+        return this.validationService.createErrorMessages(this.control, this.model);
     }
 
-    get hasHint(): boolean { // needed for AOT
+    get showHint(): boolean { // needed for AOT
         return (this.model as DynamicFormValueControlModel<DynamicFormControlValue>).hint !== null;
     }
 
@@ -149,20 +152,46 @@ export abstract class DynamicFormControlComponent implements OnChanges, OnInit, 
         return this.hasErrorMessaging && this.control.touched && !this.hasFocus && this.isInvalid;
     }
 
-    get templates(): QueryList<DynamicTemplateDirective> {
-        return this.inputTemplates ? this.inputTemplates : this.contentTemplates;
+    get templateList(): QueryList<DynamicTemplateDirective> {
+        return this.inputTemplateList !== null ? this.inputTemplateList : this.contentTemplateList;
     }
 
-    protected getEvent($event: any, type: string): DynamicFormControlEvent {
+    getClass(context: string, place: string, model: DynamicFormControlModel = this.model): string {
+
+        let controlLayout = (this.layout && this.layout[model.id]) || model.layout as DynamicFormControlLayout;
+
+        return this.layoutService.getClass(controlLayout, context, place);
+    }
+
+    getAdditional(key: string, defaultValue: any = null): any {
+
+        let model = this.model as DynamicFormValueControlModel<DynamicFormControlValue>;
+
+        return model.additional !== null && model.additional.hasOwnProperty(key) ? model.additional[key] : defaultValue;
+    }
+
+    protected createDynamicFormControlEvent($event: any, type: string): DynamicFormControlEvent {
         return {$event, context: this.context, control: this.control, group: this.group, model: this.model, type};
     }
 
     protected setTemplates(): void {
 
-        this.templates.forEach((template: DynamicTemplateDirective) => {
+        this.templateList.forEach((template: DynamicTemplateDirective) => {
 
-            if (template.as === null && (template.modelType === this.model.type || template.modelId === this.model.id)) {
-                this.template = template;
+            if ((template.modelType === this.model.type || template.modelId === this.model.id) && template.as === null) {
+
+                if (this.model.type === DYNAMIC_FORM_CONTROL_TYPE_ARRAY) {
+
+                    this.templates[DynamicFormControlComponentTemplatePosition.array] = template;
+
+                } else if (template.align === DYNAMIC_TEMPLATE_DIRECTIVE_ALIGN_START) {
+
+                    this.templates[DynamicFormControlComponentTemplatePosition.start] = template;
+
+                } else if (template.align === DYNAMIC_TEMPLATE_DIRECTIVE_ALIGN_END) {
+
+                    this.templates[DynamicFormControlComponentTemplatePosition.end] = template;
+                }
             }
         });
     }
@@ -199,8 +228,7 @@ export abstract class DynamicFormControlComponent implements OnChanges, OnInit, 
 
     onControlValueChanges(value: DynamicFormControlValue): void {
 
-        if (this.model instanceof DynamicFormValueControlModel
-        ) {
+        if (this.model instanceof DynamicFormValueControlModel) {
 
             let model = this.model as DynamicFormValueControlModel<DynamicFormControlValue>;
 
@@ -221,12 +249,9 @@ export abstract class DynamicFormControlComponent implements OnChanges, OnInit, 
         value ? this.control.disable() : this.control.enable();
     }
 
-
     onValueChange($event: Event | DynamicFormControlEvent | any): void {
 
         if ($event && $event instanceof Event) { // native HTML5 change event
-
-            ($event as Event).stopPropagation();
 
             if (this.model.type === DYNAMIC_FORM_CONTROL_TYPE_INPUT) {
 
@@ -240,64 +265,57 @@ export abstract class DynamicFormControlComponent implements OnChanges, OnInit, 
                 }
             }
 
-            this.change.emit(this.getEvent($event as Event, "change"));
+            this.change.emit(this.createDynamicFormControlEvent($event as Event, "change"));
 
-        } else if ($event && $event.hasOwnProperty("$event")) { // event bypass
+        } else if (DynamicFormControlComponent.isDynamicFormControlEvent($event)) { // event bypass
 
             this.change.emit($event as DynamicFormControlEvent);
 
         } else { // custom library value change event
 
-            this.change.emit(this.getEvent($event, "change"));
+            this.change.emit(this.createDynamicFormControlEvent($event, "change"));
         }
     }
 
+    onBlur($event: FocusEvent | DynamicFormControlEvent | any): void {
 
-    onBlurEvent($event: FocusEvent | DynamicFormControlEvent | any): void {
-
-        if ($event && $event.hasOwnProperty("$event")) {
+        if (DynamicFormControlComponent.isDynamicFormControlEvent($event)) { // event bypass
 
             this.blur.emit($event as DynamicFormControlEvent);
 
-        } else {
-
-            if ($event instanceof FocusEvent) {
-                $event.stopPropagation();
-            }
+        } else { // native HTML 5 or UI library blur event
 
             this.hasFocus = false;
-            this.blur.emit(this.getEvent($event, "blur"));
+            this.blur.emit(this.createDynamicFormControlEvent($event, "blur"));
         }
     }
 
+    onFocus($event: FocusEvent | DynamicFormControlEvent | any): void {
 
-    onFocusEvent($event: FocusEvent | DynamicFormControlEvent | any): void {
-
-        if ($event && $event.hasOwnProperty("$event")) {
+        if (DynamicFormControlComponent.isDynamicFormControlEvent($event)) { // event bypass
 
             this.focus.emit($event as DynamicFormControlEvent);
 
-        } else {
-
-            if ($event instanceof FocusEvent) {
-                $event.stopPropagation();
-            }
+        } else { // native HTML 5 or UI library focus event
 
             this.hasFocus = true;
-            this.focus.emit(this.getEvent($event, "focus"));
+            this.focus.emit(this.createDynamicFormControlEvent($event, "focus"));
         }
     }
 
+    onCustomEvent($event: any, type: string): void {
 
-    onCustomEvent($event: any, type: string | null = null): void {
-
-        if ($event && $event.hasOwnProperty("$event") && $event.hasOwnProperty("type")) { // child event bypass
+        if (DynamicFormControlComponent.isDynamicFormControlEvent($event)) { // child event bypass
 
             this.customEvent.emit($event as DynamicFormControlEvent);
 
         } else { // native UI library custom event
 
-            this.customEvent.emit(this.getEvent($event, type));
+            this.customEvent.emit(this.createDynamicFormControlEvent($event, type));
         }
+    }
+
+    static isDynamicFormControlEvent($event: any): boolean {
+        return $event !== null && typeof $event === "object" && $event.hasOwnProperty("$event");
     }
 }

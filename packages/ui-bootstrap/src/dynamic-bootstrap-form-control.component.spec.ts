@@ -2,12 +2,15 @@ import { TestBed, async, inject, ComponentFixture } from "@angular/core/testing"
 import { DebugElement, SimpleChange } from "@angular/core";
 import { ReactiveFormsModule, FormGroup, FormControl } from "@angular/forms";
 import { By } from "@angular/platform-browser";
+import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
+import { TimepickerModule } from "ngx-bootstrap/timepicker";
 import { TextMaskModule } from "angular2-text-mask";
 import {
     DynamicFormsCoreModule,
     DynamicFormService,
     DynamicCheckboxModel,
     DynamicCheckboxGroupModel,
+    DynamicColorPickerModel,
     DynamicDatePickerModel,
     DynamicEditorModel,
     DynamicFileUploadModel,
@@ -16,6 +19,7 @@ import {
     DynamicFormGroupModel,
     DynamicInputModel,
     DynamicRadioGroupModel,
+    DynamicRatingModel,
     DynamicSelectModel,
     DynamicSliderModel,
     DynamicSwitchModel,
@@ -32,6 +36,7 @@ describe("DynamicFormBootstrapComponent test suite", () => {
     let formModel = [
             new DynamicCheckboxModel({id: "checkbox"}),
             new DynamicCheckboxGroupModel({id: "checkboxGroup", group: []}),
+            new DynamicColorPickerModel({id: "colorpicker"}),
             new DynamicDatePickerModel({id: "datepicker"}),
             new DynamicEditorModel({id: "editor"}),
             new DynamicFileUploadModel({id: "upload", url: ""}),
@@ -39,13 +44,14 @@ describe("DynamicFormBootstrapComponent test suite", () => {
             new DynamicFormGroupModel({id: "formGroup", group: []}),
             new DynamicInputModel({id: "input", maxLength: 51}),
             new DynamicRadioGroupModel({id: "radioGroup"}),
+            new DynamicRatingModel({id: "rating"}),
             new DynamicSelectModel({id: "select", options: [{value: "One"}, {value: "Two"}], value: "One"}),
             new DynamicSliderModel({id: "slider"}),
             new DynamicSwitchModel({id: "switch"}),
             new DynamicTextAreaModel({id: "textarea"}),
             new DynamicTimePickerModel({id: "timepicker"})
         ],
-        testModel = formModel[7] as DynamicInputModel,
+        testModel = formModel[8],
         formGroup: FormGroup,
         fixture: ComponentFixture<DynamicBootstrapFormControlComponent>,
         component: DynamicBootstrapFormControlComponent,
@@ -56,7 +62,13 @@ describe("DynamicFormBootstrapComponent test suite", () => {
 
         TestBed.configureTestingModule({
 
-            imports: [ReactiveFormsModule, DynamicFormsCoreModule.forRoot(), TextMaskModule],
+            imports: [
+                ReactiveFormsModule,
+                DynamicFormsCoreModule.forRoot(),
+                TextMaskModule,
+                BsDatepickerModule.forRoot(),
+                TimepickerModule.forRoot()
+            ],
             declarations: [DynamicBootstrapFormControlComponent]
 
         }).compileComponents().then(() => {
@@ -104,8 +116,8 @@ describe("DynamicFormBootstrapComponent test suite", () => {
         expect(component.focus).toBeDefined();
 
         expect(component.onValueChange).toBeDefined();
-        expect(component.onBlurEvent).toBeDefined();
-        expect(component.onFocusEvent).toBeDefined();
+        expect(component.onBlur).toBeDefined();
+        expect(component.onFocus).toBeDefined();
 
         expect(component.isValid).toBe(true);
         expect(component.isInvalid).toBe(false);
@@ -121,20 +133,20 @@ describe("DynamicFormBootstrapComponent test suite", () => {
 
     it("should listen to native blur events", () => {
 
-        spyOn(component, "onBlurEvent");
+        spyOn(component, "onBlur");
 
         testElement.triggerEventHandler("blur", null);
 
-        expect(component.onBlurEvent).toHaveBeenCalled();
+        expect(component.onBlur).toHaveBeenCalled();
     });
 
     it("should listen to native focus events", () => {
 
-        spyOn(component, "onFocusEvent");
+        spyOn(component, "onFocus");
 
         testElement.triggerEventHandler("focus", null);
 
-        expect(component.onFocusEvent).toHaveBeenCalled();
+        expect(component.onFocus).toHaveBeenCalled();
     });
 
     it("should listen to native change event", () => {
@@ -159,7 +171,7 @@ describe("DynamicFormBootstrapComponent test suite", () => {
 
         spyOn(component, "onModelValueUpdates");
 
-        testModel.valueUpdates.next("test");
+        (testModel as DynamicInputModel).valueUpdates.next("test");
 
         expect(component.onModelValueUpdates).toHaveBeenCalled();
     });
@@ -183,26 +195,30 @@ describe("DynamicFormBootstrapComponent test suite", () => {
 
         expect(testFn(formModel[2])).toBeNull();
 
-        expect(testFn(formModel[3])).toBeNull();
+        expect(testFn(formModel[3])).toEqual(BootstrapFormControlType.DatePicker);
 
         expect(testFn(formModel[4])).toBeNull();
 
-        expect(testFn(formModel[5])).toEqual(BootstrapFormControlType.Array);
+        expect(testFn(formModel[5])).toBeNull();
 
-        expect(testFn(formModel[6])).toEqual(BootstrapFormControlType.Group);
+        expect(testFn(formModel[6])).toEqual(BootstrapFormControlType.Array);
 
-        expect(testFn(formModel[7])).toEqual(BootstrapFormControlType.Input);
+        expect(testFn(formModel[7])).toEqual(BootstrapFormControlType.Group);
 
-        expect(testFn(formModel[8])).toEqual(BootstrapFormControlType.RadioGroup);
+        expect(testFn(formModel[8])).toEqual(BootstrapFormControlType.Input);
 
-        expect(testFn(formModel[9])).toEqual(BootstrapFormControlType.Select);
+        expect(testFn(formModel[9])).toEqual(BootstrapFormControlType.RadioGroup);
 
         expect(testFn(formModel[10])).toBeNull();
 
-        expect(testFn(formModel[11])).toBeNull();
+        expect(testFn(formModel[11])).toEqual(BootstrapFormControlType.Select);
 
-        expect(testFn(formModel[12])).toEqual(BootstrapFormControlType.TextArea);
+        expect(testFn(formModel[12])).toBeNull();
 
         expect(testFn(formModel[13])).toBeNull();
+
+        expect(testFn(formModel[14])).toEqual(BootstrapFormControlType.TextArea);
+
+        expect(testFn(formModel[15])).toEqual(BootstrapFormControlType.TimePicker);
     });
 });

@@ -26,11 +26,13 @@ import {
 } from "@progress/kendo-angular-inputs";
 import { UploadComponent } from "@progress/kendo-angular-upload";
 import {
-    DynamicFormValidationService,
-    DynamicFormControlComponent,
-    DynamicFormControlModel,
     DynamicFormArrayGroupModel,
+    DynamicFormControlComponent,
     DynamicFormControlEvent,
+    DynamicFormControlModel,
+    DynamicFormLayout,
+    DynamicFormLayoutService,
+    DynamicFormValidationService,
     DynamicTemplateDirective,
     DynamicInputModel,
     DynamicSelectModel,
@@ -71,28 +73,29 @@ export type KendoFormControlComponent = AutoCompleteComponent | CalendarComponen
 })
 export class DynamicKendoFormControlComponent extends DynamicFormControlComponent implements OnChanges {
 
-    @ContentChildren(DynamicTemplateDirective) contentTemplates: QueryList<DynamicTemplateDirective>;
-    @Input("templates") inputTemplates: QueryList<DynamicTemplateDirective>;
+    @ContentChildren(DynamicTemplateDirective) contentTemplateList: QueryList<DynamicTemplateDirective>;
+    @Input("templates") inputTemplateList: QueryList<DynamicTemplateDirective>;
 
     @Input() bindId: boolean = true;
     @Input() context: DynamicFormArrayGroupModel | null = null;
     @Input() group: FormGroup;
     @Input() hasErrorMessaging: boolean = false;
+    @Input() layout: DynamicFormLayout;
     @Input() model: DynamicFormControlModel;
 
-    @Output() blur: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
-    @Output() change: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
-    @Output() focus: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
+    @Output("dfBlur") blur: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
+    @Output("dfChange") change: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
+    @Output("dfFocus") focus: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
     @Output("kendoEvent") customEvent: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
 
     @ViewChild(KENDO_VIEW_CHILD_SELECTOR) kendoViewChild: KendoFormControlComponent | undefined;
 
     type: KendoFormControlType | null;
 
-    constructor(protected changeDetectorRef: ChangeDetectorRef,
+    constructor(protected changeDetectorRef: ChangeDetectorRef, protected layoutService: DynamicFormLayoutService,
                 protected validationService: DynamicFormValidationService) {
 
-        super(changeDetectorRef, validationService);
+        super(changeDetectorRef, layoutService, validationService);
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -122,9 +125,9 @@ export class DynamicKendoFormControlComponent extends DynamicFormControlComponen
 
         super.setTemplates();
 
-        this.templates
-            .filter(directive => typeof directive.as === "string" && directive.as.startsWith("kendo"))
-            .forEach(directive => this.setTemplateDirective(directive));
+        this.templateList
+            .filter(template => typeof template.as === "string" && template.as.startsWith("kendo"))
+            .forEach(template => this.setTemplateDirective(template));
     }
 
     static getFormControlType(model: DynamicFormControlModel): KendoFormControlType | null {

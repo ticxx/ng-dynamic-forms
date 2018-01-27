@@ -1,14 +1,15 @@
-<!--link rel="stylesheet" href="https://unpkg.com/ngx-bootstrap/datepicker/bs-datepicker.css"-->
+<link rel="stylesheet" href="https://unpkg.com/ngx-bootstrap/datepicker/bs-datepicker.css">
 
 <div class="overflow-hidden content-margin container-fluid" style="width: 50%;">
 
     <form class="form-horizontal" [formGroup]="formGroup">
 
         <dynamic-bootstrap-form [model]="formModel"
+                                [layout]="formLayout"
                                 [group]="formGroup"
-                                (blur)="onBlur($event)"
-                                (change)="onChange($event)"
-                                (focus)="onFocus($event)">
+                                (dfBlur)="onBlur($event)"
+                                (dfChange)="onChange($event)"
+                                (dfFocus)="onFocus($event)">
 
             <ng-template modelId="bootstrapFormArray" let-context="context" let-index="index">
 

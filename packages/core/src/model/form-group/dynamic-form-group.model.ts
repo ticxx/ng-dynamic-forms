@@ -1,9 +1,5 @@
-import {
-    DynamicFormControlModel,
-    DynamicFormControlModelConfig,
-    DynamicValidatorsMap,
-    ClsConfig
-} from "../dynamic-form-control.model";
+import { DynamicFormControlModel, DynamicFormControlModelConfig } from "../dynamic-form-control.model";
+import { DynamicFormControlLayout } from "../misc/dynamic-form-control-layout.model";
 import { serializable } from "../../decorator/serializable.decorator";
 
 export const enum GroupLayoutType {
@@ -17,31 +13,25 @@ export const DYNAMIC_FORM_CONTROL_TYPE_GROUP = "GROUP";
 
 export interface DynamicFormGroupModelConfig extends DynamicFormControlModelConfig {
 
-    asyncValidator?: DynamicValidatorsMap;
     group?: DynamicFormControlModel[];
     legend?: string;
-    validator?: DynamicValidatorsMap;
     layoutType?: GroupLayoutType;
 }
 
 export class DynamicFormGroupModel extends DynamicFormControlModel {
 
-    @serializable() asyncValidator: DynamicValidatorsMap | null;
     @serializable() group: DynamicFormControlModel[] = [];
     @serializable() legend: string | null;
-    @serializable() validator: DynamicValidatorsMap | null;
     @serializable() layoutType: GroupLayoutType | null;
 
     @serializable() readonly type: string = DYNAMIC_FORM_CONTROL_TYPE_GROUP;
 
-    constructor(config: DynamicFormGroupModelConfig, cls?: ClsConfig) {
+    constructor(config: DynamicFormGroupModelConfig, layout?: DynamicFormControlLayout) {
 
-        super(config, cls);
+        super(config, layout);
 
-        this.asyncValidator = config.asyncValidator || null;
         this.group = Array.isArray(config.group) ? config.group : [];
         this.legend = config.legend || null;
-        this.validator = config.validator || null;
         this.layoutType = config.layoutType || null;
     }
 

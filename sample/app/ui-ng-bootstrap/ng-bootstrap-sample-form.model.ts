@@ -148,6 +148,18 @@ new DynamicFormGroupModel(
 
     }
     ),
+    new DynamicInputModel({
+
+        id: "lastName",
+        label: "Last Name",
+        placeholder: "Last Name",
+        validators: {
+            required: null
+        },
+        errorMessages: {
+            required: "{{ label }} is required"
+        }
+    }),
 
 
 
@@ -191,8 +203,7 @@ new DynamicFormGroupModel(
             errorMessages: {
                 required: "{{ label }} is required"
             }
-        }
-    ),
+    }),
 
     new DynamicFormLayoutGroupModel(
         {
@@ -440,23 +451,16 @@ new DynamicFormGroupModel(
         }
     ),
 
-    new DynamicInputModel(
-        {
-            id: "attachments",
-            inputType: "file",
-            label: "Attachments"
-        },
-        {
-            element: {
-                label: "col-form-label"
-            }
-        }
-    ),
+    new DynamicInputModel({
 
-    new DynamicCheckboxModel(
-        {
-            id: "confirm",
-            label: "I confirm the information given above"
-        }
-    )
+        id: "attachments",
+        inputType: "file",
+        label: "Attachments"
+    }),
+
+    new DynamicCheckboxModel({
+
+        id: "confirm",
+        label: "I confirm the information given above"
+    })
 ];

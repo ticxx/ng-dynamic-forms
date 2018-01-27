@@ -4,13 +4,16 @@ import { ReactiveFormsModule } from "@angular/forms";
 import {
     MatAutocompleteModule,
     MatCheckboxModule,
+    MatChipsModule,
     MatDatepickerModule,
+    MatIconModule,
     MatInputModule,
     MatRadioModule,
     MatSelectModule,
     MatSliderModule,
     MatSlideToggleModule
 } from "@angular/material";
+import { TextMaskModule } from "angular2-text-mask";
 import { DynamicFormsCoreModule } from "@ng-dynamic-forms/core";
 import { DynamicMaterialFormControlComponent } from "./dynamic-material-form-control.component";
 import { DynamicMaterialFormComponent } from "./dynamic-material-form.component";
@@ -21,12 +24,15 @@ import { DynamicMaterialFormComponent } from "./dynamic-material-form.component"
         ReactiveFormsModule,
         MatAutocompleteModule,
         MatCheckboxModule,
+        MatChipsModule,
         MatDatepickerModule,
+        MatIconModule,
         MatInputModule,
         MatRadioModule,
         MatSelectModule,
         MatSliderModule,
         MatSlideToggleModule,
+        TextMaskModule,
         DynamicFormsCoreModule
     ],
     declarations: [

@@ -7,7 +7,7 @@ import {
     DYNAMIC_FORM_CONTROL_ACTION_ENABLE,
     DYNAMIC_FORM_CONTROL_CONNECTIVE_AND,
     DYNAMIC_FORM_CONTROL_CONNECTIVE_OR
-} from "../model/dynamic-form-control-relation.model";
+} from "../model/misc/dynamic-form-control-relation.model";
 
 export class RelationUtils {
 
@@ -40,7 +40,9 @@ export class RelationUtils {
         return controls;
     }
 
-    static isFormControlToBeDisabled(relGroup: DynamicFormControlRelationGroup, formGroup: FormGroup): boolean {
+    static isFormControlToBeDisabled(relGroup: DynamicFormControlRelationGroup, _formGroup: FormGroup): boolean {
+
+        let formGroup: FormGroup = _formGroup;
 
         return relGroup.when.reduce((toBeDisabled: boolean, rel: DynamicFormControlRelation, index: number) => {
 

@@ -1,10 +1,7 @@
-import {
-    DynamicFormControlModel,
-    DynamicFormControlModelConfig,
-    DynamicPathable,
-    DynamicValidatorsMap,
-    ClsConfig,
-} from "../dynamic-form-control.model";
+import { DynamicFormControlModel, DynamicFormControlModelConfig } from "../dynamic-form-control.model";
+import { DynamicFormControlLayout } from "../misc/dynamic-form-control-layout.model";
+import { DynamicPathable } from "../misc/dynamic-form-control-path.model";
+import { DynamicValidatorsConfig } from "../misc/dynamic-form-control-validation.model";
 import { serializable, serialize } from "../../decorator/serializable.decorator";
 
 export class DynamicFormArrayGroupModel implements DynamicPathable {
@@ -39,32 +36,28 @@ export const DYNAMIC_FORM_CONTROL_TYPE_ARRAY = "ARRAY";
 
 export interface DynamicFormArrayModelConfig extends DynamicFormControlModelConfig {
 
-    asyncValidator?: DynamicValidatorsMap;
-    groupAsyncValidator?: DynamicValidatorsMap;
+    groupAsyncValidators?: DynamicValidatorsConfig;
     groupFactory?: () => DynamicFormControlModel[];
-    groupValidator?: DynamicValidatorsMap;
-    groups?: DynamicFormArrayGroupModel[];
+    groupValidators?: DynamicValidatorsConfig;
+    groups?: DynamicFormArrayGroupModel[] | null;
     initialCount?: number;
-    validator?: DynamicValidatorsMap;
 }
 
 export class DynamicFormArrayModel extends DynamicFormControlModel {
 
-    @serializable() asyncValidator: DynamicValidatorsMap | null;
-    @serializable() groupAsyncValidator: DynamicValidatorsMap | null;
+    @serializable() groupAsyncValidators: DynamicValidatorsConfig | null;
     groupFactory: () => DynamicFormControlModel[];
-    @serializable() groupValidator: DynamicValidatorsMap | null;
+    @serializable() groupValidators: DynamicValidatorsConfig | null;
     @serializable() groups: DynamicFormArrayGroupModel[] = [];
     @serializable() initialCount: number;
-    @serializable() validator: DynamicValidatorsMap | null;
 
     @serializable() readonly groupPrototype: DynamicFormControlModel[]; // only to recreate model from JSON
-    readonly origin: DynamicFormControlModel[]; // deprecated - only for backwards compatibility;
+    /*@deprecated*/ readonly origin: DynamicFormControlModel[];
     @serializable() readonly type: string = DYNAMIC_FORM_CONTROL_TYPE_ARRAY;
 
-    constructor(config: DynamicFormArrayModelConfig, cls?: ClsConfig) {
+    constructor(config: DynamicFormArrayModelConfig, layout?: DynamicFormControlLayout) {
 
-        super(config, cls);
+        super(config, layout);
 
         if (typeof config.groupFactory === "function") {
             this.groupFactory = config.groupFactory;
@@ -72,12 +65,10 @@ export class DynamicFormArrayModel extends DynamicFormControlModel {
             throw new Error("group factory function must be specified for DynamicFormArrayModel");
         }
 
-        this.asyncValidator = config.asyncValidator || null;
-        this.groupAsyncValidator = config.groupAsyncValidator || null;
+        this.groupAsyncValidators = config.groupAsyncValidators || null;
         this.groupPrototype = this.groupFactory();
-        this.groupValidator = config.groupValidator || null;
+        this.groupValidators = config.groupValidators || null;
         this.initialCount = typeof config.initialCount === "number" ? config.initialCount : 1;
-        this.validator = config.validator || null;
 
         if (Array.isArray(config.groups)) {
 

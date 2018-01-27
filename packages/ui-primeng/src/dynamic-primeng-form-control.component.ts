@@ -16,6 +16,7 @@ import {
     Calendar,
     Checkbox,
     Chips,
+    ColorPicker,
     Dropdown,
     Editor,
     InputMask,
@@ -26,19 +27,22 @@ import {
     Spinner
 } from "primeng/primeng";
 import {
-    DynamicFormValidationService,
-    DynamicFormControlComponent,
-    DynamicFormControlModel,
     DynamicFormArrayGroupModel,
+    DynamicFormControlComponent,
     DynamicFormControlEvent,
+    DynamicFormControlModel,
+    DynamicFormLayout,
+    DynamicFormLayoutService,
+    DynamicFormValidationService,
     DynamicTemplateDirective,
     DynamicInputModel,
     DynamicSelectModel,
     DYNAMIC_FORM_CONTROL_TYPE_ARRAY,
     DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX,
     DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX_GROUP,
-    DYNAMIC_FORM_CONTROL_TYPE_EDITOR,
+    DYNAMIC_FORM_CONTROL_TYPE_COLORPICKER,
     DYNAMIC_FORM_CONTROL_TYPE_DATEPICKER,
+    DYNAMIC_FORM_CONTROL_TYPE_EDITOR,
     DYNAMIC_FORM_CONTROL_TYPE_GROUP,
     DYNAMIC_FORM_CONTROL_TYPE_INPUT,
     DYNAMIC_FORM_CONTROL_INPUT_TYPE_NUMBER,
@@ -48,8 +52,7 @@ import {
     DYNAMIC_FORM_CONTROL_TYPE_SLIDER,
     DYNAMIC_FORM_CONTROL_TYPE_SWITCH,
     DYNAMIC_FORM_CONTROL_TYPE_TEXTAREA,
-    DYNAMIC_FORM_CONTROL_TYPE_TIMEPICKER,
-    Utils
+    DYNAMIC_FORM_CONTROL_TYPE_TIMEPICKER
 } from "@ng-dynamic-forms/core";
 import {
     PrimeNGFormControlType,
@@ -59,8 +62,8 @@ import {
     PRIME_NG_DROPDOWN_LIST_TEMPLATE_DIRECTIVES
 } from "./dynamic-primeng-form.const";
 
-export type PrimeNGFormControlComponent = AutoComplete | Calendar | Checkbox | Chips | Dropdown | Editor | InputMask |
-    InputSwitch | MultiSelect | Rating | Slider | Spinner;
+export type PrimeNGFormControlComponent = AutoComplete | Calendar | Checkbox | Chips | ColorPicker | Dropdown | Editor |
+    InputMask | InputSwitch | MultiSelect | Rating | Slider | Spinner;
 
 @Component({
     selector: "dynamic-primeng-form-control,dynamic-form-primeng-control",
@@ -68,18 +71,19 @@ export type PrimeNGFormControlComponent = AutoComplete | Calendar | Checkbox | C
 })
 export class DynamicPrimeNGFormControlComponent extends DynamicFormControlComponent implements OnChanges {
 
-    @ContentChildren(DynamicTemplateDirective) contentTemplates: QueryList<DynamicTemplateDirective>;
-    @Input("templates") inputTemplates: QueryList<DynamicTemplateDirective>;
+    @ContentChildren(DynamicTemplateDirective) contentTemplateList: QueryList<DynamicTemplateDirective>;
+    @Input("templates") inputTemplateList: QueryList<DynamicTemplateDirective>;
 
     @Input() bindId: boolean = true;
     @Input() context: DynamicFormArrayGroupModel | null = null;
     @Input() group: FormGroup;
     @Input() hasErrorMessaging: boolean = false;
+    @Input() layout: DynamicFormLayout;
     @Input() model: DynamicFormControlModel;
 
-    @Output() blur: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
-    @Output() change: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
-    @Output() focus: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
+    @Output("dfBlur") blur: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
+    @Output("dfChange") change: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
+    @Output("dfFocus") focus: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
     @Output("pEvent") customEvent: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
 
     @ViewChild(PRIME_NG_VIEW_CHILD_SELECTOR) pViewChild: PrimeNGFormControlComponent | undefined;
@@ -88,10 +92,10 @@ export class DynamicPrimeNGFormControlComponent extends DynamicFormControlCompon
 
     type: PrimeNGFormControlType | null;
 
-    constructor(protected changeDetectorRef: ChangeDetectorRef,
+    constructor(protected changeDetectorRef: ChangeDetectorRef, protected layoutService: DynamicFormLayoutService,
                 protected validationService: DynamicFormValidationService) {
 
-        super(changeDetectorRef, validationService);
+        super(changeDetectorRef, layoutService, validationService);
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -121,9 +125,9 @@ export class DynamicPrimeNGFormControlComponent extends DynamicFormControlCompon
 
         super.setTemplates();
 
-        this.templates
-            .filter(directive => Utils.isString(directive.as))
-            .forEach(directive => this.setTemplateDirective(directive));
+        this.templateList
+            .filter(template => typeof template.as === "string")
+            .forEach(template => this.setTemplateDirective(template));
     }
 
     onAutoComplete(_$event: any): void {
@@ -147,6 +151,9 @@ export class DynamicPrimeNGFormControlComponent extends DynamicFormControlCompon
             case DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX_GROUP:
             case DYNAMIC_FORM_CONTROL_TYPE_GROUP:
                 return PrimeNGFormControlType.Group;
+
+            case DYNAMIC_FORM_CONTROL_TYPE_COLORPICKER:
+                return PrimeNGFormControlType.ColorPicker;
 
             case DYNAMIC_FORM_CONTROL_TYPE_DATEPICKER:
             case DYNAMIC_FORM_CONTROL_TYPE_TIMEPICKER:

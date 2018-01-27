@@ -12,11 +12,13 @@ import {
 } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import {
-    DynamicFormValidationService,
-    DynamicFormControlModel,
     DynamicFormArrayGroupModel,
     DynamicFormControlComponent,
     DynamicFormControlEvent,
+    DynamicFormControlModel,
+    DynamicFormLayout,
+    DynamicFormLayoutService,
+    DynamicFormValidationService,
     DynamicTemplateDirective,
     DYNAMIC_FORM_CONTROL_TYPE_ARRAY,
     DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX,
@@ -34,13 +36,13 @@ export const enum BootstrapFormControlType {
 
     Array = 1, //"ARRAY",
     Checkbox = 2, //"CHECKBOX",
-    DatePicker = 99, //"DATEPICKER,
-    Group = 3, //"GROUP",
-    Input = 4, //"INPUT",
-    RadioGroup = 5, //"RADIO_GROUP",
-    Select = 6, //"SELECT",
-    TextArea = 7, //"TEXTAREA",
-    TimePicker = 10 //"TIMEPICKER"
+    DatePicker = 3, //"DATEPICKER,
+    Group = 4, //"GROUP",
+    Input = 5, //"INPUT",
+    RadioGroup = 6, //"RADIO_GROUP",
+    Select = 7, //"SELECT",
+    TextArea = 8, //"TEXTAREA",
+    TimePicker = 9 //"TIMEPICKER"
 }
 
 @Component({
@@ -49,26 +51,28 @@ export const enum BootstrapFormControlType {
 })
 export class DynamicBootstrapFormControlComponent extends DynamicFormControlComponent implements AfterViewInit, OnChanges {
 
-    @ContentChildren(DynamicTemplateDirective) contentTemplates: QueryList<DynamicTemplateDirective>;
-    @Input("templates") inputTemplates: QueryList<DynamicTemplateDirective>;
+    @ContentChildren(DynamicTemplateDirective) contentTemplateList: QueryList<DynamicTemplateDirective>;
+    @Input("templates") inputTemplateList: QueryList<DynamicTemplateDirective>;
 
     @Input() asBootstrapFormGroup: boolean = true;
     @Input() bindId: boolean = true;
     @Input() context: DynamicFormArrayGroupModel | null = null;
     @Input() group: FormGroup;
     @Input() hasErrorMessaging: boolean = false;
+    @Input() layout: DynamicFormLayout;
     @Input() model: DynamicFormControlModel;
 
-    @Output() blur: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
-    @Output() change: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
-    @Output() focus: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
+    @Output("dfBlur") blur: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
+    @Output("dfChange") change: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
+    @Output("dfFocus") focus: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
+    @Output("bsEvent") customEvent: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
 
     type: BootstrapFormControlType | null;
 
-    constructor(protected changeDetectorRef: ChangeDetectorRef,
+    constructor(protected changeDetectorRef: ChangeDetectorRef, protected layoutService: DynamicFormLayoutService,
                 protected validationService: DynamicFormValidationService) {
 
-        super(changeDetectorRef, validationService);
+        super(changeDetectorRef, layoutService, validationService);
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -94,8 +98,7 @@ export class DynamicBootstrapFormControlComponent extends DynamicFormControlComp
                 return BootstrapFormControlType.Group;
 
             case DYNAMIC_FORM_CONTROL_TYPE_DATEPICKER:
-                return null;
-                //return BootstrapFormControlType.DatePicker;
+                return BootstrapFormControlType.DatePicker;
 
             case DYNAMIC_FORM_CONTROL_TYPE_INPUT:
                 return BootstrapFormControlType.Input;
@@ -110,8 +113,7 @@ export class DynamicBootstrapFormControlComponent extends DynamicFormControlComp
                 return BootstrapFormControlType.TextArea;
 
             case DYNAMIC_FORM_CONTROL_TYPE_TIMEPICKER:
-                return null;
-                //return BootstrapFormControlType.TimePicker;
+                return BootstrapFormControlType.TimePicker;
 
             default:
                 return null;

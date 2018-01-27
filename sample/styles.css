@@ -94,6 +94,13 @@ pre {
     text-align: center;
 }
 
+[bsdatepicker] + .input-group-btn .btn {
+    color: #555;
+    text-align: center;
+    background-color: #eee;
+    border: 1px solid #ccc;
+}
+
 form:nth-of-type(2) dynamic-form-basic-control dynamic-form-basic-control {
     display: inline-block !important;
     margin: 0.8rem 0;
@@ -110,6 +117,9 @@ form:nth-of-type(2) dynamic-form-basic-control dynamic-form-basic-control {
     display: none;
 }
 
+dynamic-basic-form-control {
+    margin-bottom: 1.25rem;
+}
 
 /* KENDO */
 kendo-calendar {
@@ -169,6 +179,10 @@ mat-slide-toggle {
     display: inline-block !important;
 }
 
+mat-form-field.mat-form-field-type-mat-chip-list {
+    width: 100%;
+}
+
 dynamic-material-form-control {
     display: block;
     margin-bottom: 1rem;
@@ -188,6 +202,11 @@ dynamic-material-form-control .mat-list-item {
     justify-content: center;
 }
 
+/* NG Bootstrap */
+
+dynamic-ng-bootstrap-form-control ngb-datepicker {
+    display: inline-block !important;
+}
 
 /* PRIME NG */
 dynamic-primeng-form-control {

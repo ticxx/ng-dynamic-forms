@@ -15,17 +15,11 @@ describe("DynamicEditorModel test suite", () => {
         expect(model.disabled).toBe(false);
         expect(model.errorMessages).toBeNull();
         expect(model.hasErrorMessages).toBe(false);
+        expect(model.hidden).toBe(false);
         expect(model.id).toEqual(config.id);
         expect(model.label).toBeNull();
-        expect(model.name).toEqual(model.id);
         expect(model.type).toEqual(DYNAMIC_FORM_CONTROL_TYPE_EDITOR);
         expect(model.value).toBeNull();
-    });
-
-    it("should throw when no model id is specified", () => {
-
-        expect(() => new DynamicEditorModel({}))
-            .toThrow(new Error("string id must be specified for DynamicFormControlModel"));
     });
 
     it("should set disabled property correctly", () => {

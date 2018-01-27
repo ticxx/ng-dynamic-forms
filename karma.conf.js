@@ -32,7 +32,6 @@ module.exports = function (config) {
             "karma-coverage",
             "karma-coveralls",
             "karma-jasmine",
-            "karma-phantomjs-launcher",
             "karma-remap-istanbul",
             "karma-sourcemap-loader"
         ],
@@ -69,6 +68,8 @@ module.exports = function (config) {
             {pattern: "node_modules/text-mask-core/**/*.js", included: false, watched: false},
 
             {pattern: "node_modules/ionic-angular/**/*.js", included: false, watched: false},
+
+            {pattern: "node_modules/ngx-bootstrap/**/*.js", included: false, watched: false},
 
             {pattern: "node_modules/primeng/**/*.js", included: false, watched: false},
             {pattern: "node_modules/primeng/**/*.js.map", included: false, watched: false},
@@ -134,7 +135,7 @@ module.exports = function (config) {
 
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ["PhantomJS"],
+        browsers: ["ChromeHeadless"],
 
 
         // Continuous Integration mode

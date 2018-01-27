@@ -3,15 +3,22 @@ import { FormGroup } from "@angular/forms";
 import {
     DynamicFormControlComponent,
     DynamicFormControlEvent,
-    DynamicFormControlEventType
+    DYNAMIC_FORM_CONTROL_EVENT_TYPE_BLUR,
+    DYNAMIC_FORM_CONTROL_EVENT_TYPE_CHANGE,
+    DYNAMIC_FORM_CONTROL_EVENT_TYPE_FOCUS,
+    DYNAMIC_FORM_CONTROL_EVENT_TYPE_CUSTOM
 } from "./dynamic-form-control.component";
 import { DynamicFormControlModel } from "../model/dynamic-form-control.model";
+import { DynamicFormControlLayout } from "../model/misc/dynamic-form-control-layout.model";
 import { DynamicTemplateDirective } from "../directive/dynamic-template.directive";
+import { DynamicFormService } from "../service/dynamic-form.service";
+import { DynamicFormLayout, DynamicFormLayoutService } from "../service/dynamic-form-layout.service";
 
 export abstract class DynamicFormComponent {
 
-    group: FormGroup;
-    model: DynamicFormControlModel[];
+    formGroup: FormGroup;
+    formModel: DynamicFormControlModel[];
+    formLayout: DynamicFormLayout;
 
     components: QueryList<DynamicFormControlComponent>;
     templates: QueryList<DynamicTemplateDirective>;
@@ -21,27 +28,36 @@ export abstract class DynamicFormComponent {
     focus: EventEmitter<DynamicFormControlEvent>;
     customEvent: EventEmitter<DynamicFormControlEvent>;
 
+    constructor(protected formService: DynamicFormService, protected layoutService: DynamicFormLayoutService) {}
+
     trackByFn(_index: number, model: DynamicFormControlModel): string {
         return model.id;
     }
 
-    onEvent($event: DynamicFormControlEvent, type: DynamicFormControlEventType) {
+    getClass(model: DynamicFormControlModel, context: string, place: string): string {
+
+        let controlLayout = this.layoutService.findById(model.id, this.formLayout) || model.layout as DynamicFormControlLayout;
+
+        return this.layoutService.getClass(controlLayout, context, place);
+    }
+
+    onEvent($event: DynamicFormControlEvent, type: string) {
 
         switch (type) {
 
-            case DynamicFormControlEventType.Blur:
+            case DYNAMIC_FORM_CONTROL_EVENT_TYPE_BLUR:
                 this.blur.emit($event);
                 break;
 
-            case DynamicFormControlEventType.Change:
+            case DYNAMIC_FORM_CONTROL_EVENT_TYPE_CHANGE:
                 this.change.emit($event);
                 break;
 
-            case DynamicFormControlEventType.Focus:
+            case DYNAMIC_FORM_CONTROL_EVENT_TYPE_FOCUS:
                 this.focus.emit($event);
                 break;
 
-            case DynamicFormControlEventType.Custom:
+            case DYNAMIC_FORM_CONTROL_EVENT_TYPE_CUSTOM:
                 this.customEvent.emit($event);
                 break;
         }

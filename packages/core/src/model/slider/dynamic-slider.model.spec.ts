@@ -16,11 +16,11 @@ describe("DynamicSliderModel test suite", () => {
     it("should initialize correctly", () => {
 
         expect(model.disabled).toBe(false);
+        expect(model.hidden).toBe(false);
         expect(model.id).toEqual(config.id);
         expect(model.label).toBeNull();
         expect(model.min).toBe(config.min);
         expect(model.max).toBe(config.max);
-        expect(model.name).toEqual(model.id);
         expect(model.step).toBe(config.step);
         expect(model.type).toEqual(DYNAMIC_FORM_CONTROL_TYPE_SLIDER);
         expect(model.value).toBe(config.value);

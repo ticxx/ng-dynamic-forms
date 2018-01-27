@@ -4,18 +4,22 @@ const path        = require("path"),
 
 const format  = utils.getRollupFormat(process.argv),
       globals = utils.getRollupGlobals(),
+      target  = utils.getTarget(process.argv),
       minify  = utils.hasMinifyFlag(process.argv);
 
 export default {
 
-    input: utils.getRollupInputPath(packageJson),
-    output: {file: utils.getRollupOutputPath(packageJson, format, minify), format: format},
-    banner: utils.getBanner(packageJson),
+    input: utils.getRollupInputPath(packageJson, target),
+    output: {
+        file: utils.getRollupOutputPath(packageJson, format, target, minify),
+        format: format,
+        name: "ngDF.kendoUI",
+        globals: globals,
+        sourcemap: true,
+        exports: "named",
+        banner: utils.getBanner(packageJson)
+    },
     context: "this",
-    exports: "named",
     external: Object.keys(globals),
-    globals: globals,
-    name: "ngDF.kendoUI",
-    plugins: utils.getRollupPlugins(minify),
-    sourcemap: true
+    plugins: utils.getRollupPlugins(minify)
 };

@@ -17,12 +17,14 @@ describe("DynamicDatepickerModel test suite", () => {
 
         expect(model.disabled).toBe(false);
         expect(model.focusedDate).toBeNull();
+        expect(model.hidden).toBe(false);
         expect(model.id).toEqual(config.id);
         expect(model.label).toBeNull();
         expect(model.format).toBeNull();
         expect(model.max).toBeNull();
         expect(model.min).toBeNull();
-        expect(model.name).toEqual(model.id);
+        expect(model.toggleIcon).toBeNull();
+        expect(model.toggleLabel).toBeNull();
         expect(model.type).toEqual(DYNAMIC_FORM_CONTROL_TYPE_DATEPICKER);
         expect(model.value).toBe(config.value);
     });

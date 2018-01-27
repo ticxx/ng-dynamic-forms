@@ -1,7 +1,9 @@
 language: node_js
-sudo: false
+sudo: required
 node_js:
   - "node"
+addons:
+  chrome: stable
 script:
   - npm run build:packages
   - npm run tests:unit

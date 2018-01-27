@@ -1,3 +1,154 @@
+# 5.4.3
+
+### **Features** 
+
+* initial text mask support for Material UI package (closes [#510](https://github.com/udos86/ng-dynamic-forms/issues/510))
+* `pattern` binding added to ion input (closes [#645](https://github.com/udos86/ng-dynamic-forms/issues/645))
+* upgrade to ngx-bootstrap `2.0.0`
+
+***
+
+# 5.4.2
+
+### **Features** 
+
+* `maxLength` attribute added to Material textarea control
+* upgrade to NG Bootstrap `beta.9`
+
+### **Bugfixes** 
+
+* minlength and maxlength error messages are now created correctly (closes [#647](https://github.com/udos86/ng-dynamic-forms/issues/647))
+
+***
+
+# 5.4.1
+
+### **Features** 
+
+* `hidden` property added to `DynamicFormControlModel` for hiding form controls 
+
+***
+
+# 5.4.0 - Special Xmas Gift Edition
+
+### **Features** 
+
+* new `InjectionToken` `DYNAMIC_VALIDATORS` for entirely avoiding any mangling issues when using custom validators
+(see updated chapter on [**Custom Validators**](https://github.com/udos86/ng-dynamic-forms#custom-validators))
+* official support for JSON form models (see new chapter on [**JSON Form Models**](https://github.com/udos86/ng-dynamic-forms#json-form-models))
+* major accessibility improvements for Material template (closes [#630](https://github.com/udos86/ng-dynamic-forms/issues/630))
+* upgrade to NG Bootstrap `beta.8`
+
+***
+
+# 5.3.0
+
+### **Features** 
+
+* **initial support for** [**ngx-bootstrap**](https://valor-software.com/ngx-bootstrap/#/) (`ngx-bootstrap` is now a peer dependency of `@ng-dynamic-forms/ui-bootstrap`)
+* **initial support for Prime NG color picker via new** `DynamicColorPickerModel`
+
+***
+
+# 5.2.0
+
+### **Features** 
+
+* `additional` property added to `DynamicFormValueControlModel` for individually configuring UI components 
+(see [**new chapter on form component configuration**](https://github.com/udos86/ng-dynamic-forms/tree/master#form-control-configuration))
+* upgrade to NG Bootstrap `beta.7`
+
+***
+
+# 5.1.2
+
+### **Features** 
+
+* `name` property can now be configured on any `DynamicFormControlModel` (closes [#600](https://github.com/udos86/ng-dynamic-forms/issues/600))
+* upgrade to Angular Material `5.0.0`
+* Material UI template improvements 
+
+***
+
+# 5.1.1
+
+### **Features** 
+
+* **initial Chips support in Material UI package**
+* `hint` support for Select in Material UI package (closes [#608](https://github.com/udos86/ng-dynamic-forms/issues/608))
+* upgrade to Angular Material `5.0.0-rc.2`
+* upgrade to NG Bootstrap `beta.6`
+
+### **Bugfixes** 
+
+* packages now pass `strictNullChecks` again (closes [#614](https://github.com/udos86/ng-dynamic-forms/issues/614))
+
+***
+
+# 5.1.0
+
+### **Features** 
+
+* **All new approach to custom form layouts** (see updated [**README**](https://github.com/udos86/ng-dynamic-forms#form-layouts) und [**sample code**](https://github.com/udos86/ng-dynamic-forms/tree/master/sample/app))
+
+### **Deprecation** 
+
+* **using** `clsConfig` **for providing layout information is now deprecated**
+
+***
+
+# 5.0.3
+
+### **Features** 
+
+* **upgrade to Angular Material `5.0.0-rc.1`**
+* **upgrade to Prime NG `5.0.0`**
+
+***
+
+# 5.0.2
+
+### **Features** 
+
+* `min`, `max` and `focusedDate` support for `DynamicDatePickerModel` in `ui-ng-bootsrap` (closes [#570](https://github.com/udos86/ng-dynamic-forms/issues/570), [#576](https://github.com/udos86/ng-dynamic-forms/issues/576))
+
+***
+
+# 5.0.1
+
+### **Features** 
+
+* **upgrade to Angular Material `5.0.0-rc0`**
+
+***
+
+# 5.0.0
+
+### **Breaking Changes**
+
+* `blur`, `focus` and `change` outputs have been prefixed with `df` to avoid any interference with native control events bubbling up
+(see updated [README.md](https://github.com/udos86/ng-dynamic-forms#form-control-events))
+* `asyncValidator` and `validator` properties from `DynamicFormGroupModel` and `DynamicFormArrayModel` 
+have been removed and replaced by `asyncValidators` and `validators`
+* `groupAsyncValidator` and `groupValidator` properties from `DynamicFormArrayModel` 
+have been removed and replaced by `groupAsyncValidators` and `groupValidators`
+* `getAsyncValidator()` and `getValidator()` function signatures from `DynamicFormValidationService` have been changed
+* `createFormGroup()` function from `DynamicFormService` now accepts `AbstractControlOptions` instead of `extra`
+
+### **Features** 
+
+* **upgrade to Angular 5** (closes [#496](https://github.com/udos86/ng-dynamic-forms/issues/496))
+* support for multiple `asyncValidators` and `validators` on `FormArray` and `FormGroup`
+* support for `FormHooks` via new property `updateOn` on `DynamicFormControlModel` 
+* support for applying both a start **and** end template to a `DynamicFormControlComponent` instead of either / or
+* support for updating `validators` and `asyncValidators` at runtime via new `updateValidators()` and `updateAsyncValidators()` functions on `DynamicFormValidationService` (closes [#342](https://github.com/udos86/ng-dynamic-forms/issues/342)) 
+
+### **Bugfixes** 
+
+* `DynamicDateControlModel` now accepts date values of type `object` in order to support proprietary date representations, e.g. `NgbDateStruct` in NG Bootstrap (closes [#556](https://github.com/udos86/ng-dynamic-forms/issues/556))
+
+***
+
 # 1.4.34
 
 This will be the last release before Angular 5.
@@ -9,6 +160,7 @@ There'll be a major version incrementation to `5.0.0` to fully stay in sync with
 * **major event handling enhancements** (see new chapter on [Form Control Events](https://github.com/udos86/ng-dynamic-forms/tree/development#form-control-events)) 
 * **update to @angular/material** `beta.12` 
 
+***
 
 # 1.4.33
 
@@ -16,6 +168,7 @@ There'll be a major version incrementation to `5.0.0` to fully stay in sync with
 
 * **major bundling bug fixed causing `@angular/common` to be bundled with `*.es.js` files**
 
+***
 
 # 1.4.32
 
@@ -28,6 +181,7 @@ There'll be a major version incrementation to `5.0.0` to fully stay in sync with
     * "md" prefix has been replaced by "mat"
     * see Material [**CHANGELOG.md**](https://github.com/angular/material2/blob/master/CHANGELOG.md) and [**#7253**](https://github.com/angular/material2/issues/7253) on how to upgrade properly  
 
+***
 
 # 1.4.31
 
@@ -52,7 +206,8 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
     * class `k-required` is now automatically added to error messages in Kendo for color styling
     * `<ng-content>` has been removed as it has little benefit and never been officially documented 
 * Library code now passes `noUnusedParameters` and `strictNullChecks` TypeScript transpiler checks (closes [#497](https://github.com/udos86/ng2-dynamic-forms/issues/497))
-                                                                                                   
+    
+***                                                                                               
 
 # 1.4.29
 
@@ -60,6 +215,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 
 * `DynamicValidationService` now correctly resolves alternate validator notation
 
+***
 
 # 1.4.28
 
@@ -71,6 +227,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 * initial support for Spinner and InputMask in `ui-primeng`
 * update to ng-bootstrap `beta.4` 
 
+***
 
 # 1.4.27
 
@@ -78,6 +235,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 
 * error messages working again on `FormGroup`s (closes [#475](https://github.com/udos86/ng2-dynamic-forms/issues/475))
 
+***
 
 # 1.4.26
 
@@ -85,6 +243,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 
 * **support for Material beta.10** (closes [#479](https://github.com/udos86/ng2-dynamic-forms/issues/479) and [#480](https://github.com/udos86/ng2-dynamic-forms/issues/480))
 
+***
 
 # 1.4.25
 
@@ -92,6 +251,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 
 * error messaging template improvements
 
+***
 
 # 1.4.24
 
@@ -100,6 +260,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 * `indeterminated` support added for `DynamicCheckboxModel` in most UI templates
 * update to NG Bootstrap beta.1
 
+***
 
 # 1.4.23
 
@@ -118,6 +279,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
     * is now preferred over manually adding `DynamicFormControlComponents` via `*ngFor`  
     * consult updated [**sample code**](https://github.com/udos86/ng2-dynamic-forms/tree/master/example), [**README.md**](https://github.com/udos86/ng2-dynamic-forms/blob/master/README.md) and [**API docs**](http://ng2-dynamic-forms.udos86.de/docs/) for proper usage
  
+***
 
 # 1.4.22
 
@@ -128,6 +290,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
     * CSS class `btn-primary` is not applied automatically anymore 
 * update to NG Bootstrap alpha.30
 
+***
 
 # 1.4.21
 
@@ -137,6 +300,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 * `filterable` support for dropdown and multiselect controls in Prime NG UI package (closes [#448](https://github.com/udos86/ng2-dynamic-forms/issues/448)) 
 * enhanced datepicker support in NG Bootstrap UI package (closes [#447](https://github.com/udos86/ng2-dynamic-forms/issues/447))
 
+***
 
 # 1.4.20
 
@@ -144,6 +308,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 
 * flaws in path resolving and Kendo UI template finally fixed
 
+***
 
 # 1.4.19
 
@@ -161,6 +326,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 * `getPath()` method added to `DynamicFormService` (see [#414](https://github.com/udos86/ng2-dynamic-forms/issues/414))
 * a `DynamicFormArrayGroupModel` can now directly be referenced by a local default template variable (see updated [README.md](https://github.com/udos86/ng2-dynamic-forms#form-arrays))
 
+***
 
 # 1.4.18
 
@@ -173,6 +339,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 * `parent` and `path` getter added to `DynamicFormArrayGroupModel` (closes [#414](https://github.com/udos86/ng2-dynamic-forms/issues/414)
 * Bootstrap CSS class assignment adjusted for checkbox and radio control (closes [#425](https://github.com/udos86/ng2-dynamic-forms/issues/425)
 
+***
 
 # 1.4.17
 
@@ -187,6 +354,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 * support for new Foundation XY Grid 
 * form array groups are now contained by a `<div>` instead of `<fieldset>` due to CSS Flexbox bug
 
+***
 
 # 1.4.16
 
@@ -203,6 +371,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 * datepicker integration in Material UI package has been improved (closes [#407](https://github.com/udos86/ng2-dynamic-forms/issues/407))
 * major internal component refactoring (part II of II)
 
+***
 
 # 1.4.15
 
@@ -210,6 +379,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 
 * Buggy string enums reset (closes [#409](https://github.com/udos86/ng2-dynamic-forms/issues/409))
 
+***
 
 # 1.4.14
 
@@ -221,6 +391,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 
 * major internal component refactoring (part I of II)
 
+***
 
 # 1.4.13
 
@@ -233,6 +404,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 
 * initial support for error messsaging in Kendo UI package (closes [#386](https://github.com/udos86/ng2-dynamic-forms/issues/386))
 
+***
 
 # 1.4.12
 
@@ -242,6 +414,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 * `DynamicFormControlEvent` has been enhanced by `group` and `context` properties (closes [#378](https://github.com/udos86/ng2-dynamic-forms/issues/378))
 * `disabled` input bindings have been completely removed from Kendo UI template 
 
+***
 
 # 1.4.11
 
@@ -249,6 +422,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 
 * missing `of` Observable operator import added (closes [#372](https://github.com/udos86/ng2-dynamic-forms/issues/372))
 
+***
 
 # 1.4.10
 
@@ -259,6 +433,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 * update to @angular/material `beta.5` 
 * initial datepicker support in Material UI package
 
+***
 
 # 1.4.9
 
@@ -267,6 +442,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 * **Kendo UI package updated to 1.0.0**
 * NG Bootstrap UI template now implements `NgbRadioGroup` (closes [#351](https://github.com/udos86/ng2-dynamic-forms/issues/351))
 
+***
 
 # 1.4.8
 
@@ -278,6 +454,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 * build refactoring 
 * sample app now also bundles flawless with Rollup
 
+***
 
 # 1.4.7
 
@@ -294,6 +471,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 * update to PrimeNG `4.0.0` (closes [#340](https://github.com/udos86/ng2-dynamic-forms/issues/340))
 * Remaining `noImplicitAny: true` TypeScript errors have been removed (closes [#345](https://github.com/udos86/ng2-dynamic-forms/issues/344))
 
+***
 
 # 1.4.6
 
@@ -301,6 +479,8 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 
 * initial checkbox, input, radio group and textarea support in `ui-kendo`
 * `moveFormGroupControl()` function added to `DynamicFormService` (closes [#339](https://github.com/udos86/ng2-dynamic-forms/issues/339))
+
+***
 
 # 1.4.5
 
@@ -313,6 +493,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 * `placeholder` property added to `DynamicDateControlModel`
 * initial datepicker support in `ui-kendo`
 
+***
 
 # 1.4.4
 
@@ -322,6 +503,7 @@ npm install @ng-dynamic-forms/core @ng-dynamic-forms/ui-<package_name> -S
 This is a major improvement to make complex form layouts more easy to achieve. 
 By default `form-group` CSS class now **is not set** for nested form models anymore. 
 
+***
 
 # 1.4.3
 
@@ -330,6 +512,7 @@ By default `form-group` CSS class now **is not set** for nested form models anym
 * **Initial UI support for Ionic 2** 
 * `README.md` files of UI packages now contain form control overview 
 
+***
 
 # 1.4.2
 
@@ -339,6 +522,7 @@ By default `form-group` CSS class now **is not set** for nested form models anym
 * `multiple` now working for `DynamicSelectModel` in `ui-material`
 * `md-error` added for `DynamicInputModel` and `DynamicTextareaModel` in `ui-material`
 
+***
 
 # 1.4.1
 
@@ -349,6 +533,7 @@ By default `form-group` CSS class now **is not set** for nested form models anym
 * checkbox and radio button labels are now clickable in `ui-primeng` (closes [#319](https://github.com/udos86/ng2-dynamic-forms/issues/319))
 * inital support for `Dateinput` in `ui-kendo` 
 
+***
 
 # 1.4.0
 
@@ -363,7 +548,8 @@ By default `form-group` CSS class now **is not set** for nested form models anym
 ### **Features** 
 
 * **Update to Angular 4** (closes [#292](https://github.com/udos86/ng2-dynamic-forms/issues/292))
-                      
+
+***                      
 
 # 1.3.18
 

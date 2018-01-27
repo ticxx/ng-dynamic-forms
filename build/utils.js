@@ -1,8 +1,10 @@
-const resolve    = require("rollup-plugin-node-resolve"),
-      sourcemaps = require("rollup-plugin-sourcemaps"),
-      uglify     = require("rollup-plugin-uglify"),
-      dateFormat = require("dateformat"),
-      license    = require("fs").readFileSync("./LICENSE", "utf8");
+const alias           = require("rollup-plugin-alias"),
+      resolve         = require("rollup-plugin-node-resolve"),
+      sourcemaps      = require("rollup-plugin-sourcemaps"),
+      uglify          = require("rollup-plugin-uglify"),
+      dateFormat      = require("dateformat"),
+      license         = require("fs").readFileSync("./LICENSE", "utf8"),
+      rxjsPathMapping = require("rxjs/_esm5/path-mapping")();
 
 const utils = {
 
@@ -10,29 +12,34 @@ const utils = {
         return !!argv.includes("--minify");
     },
 
+    getTarget: argv => {
+        return argv[argv.indexOf("--target") + 1];
+    },
+
     getBanner: packageJson => {
         return `/*!\n${packageJson.name} ${packageJson.version} ${dateFormat(Date.now(), "UTC:yyyy-mm-dd HH:MM")} UTC\n${license}\n*/`;
     },
 
-    getRollupInputPath: packageJson => {
+    getRollupInputPath: (packageJson, target) => {
 
-        let pkgNameSplit = packageJson.name.split("/");
+        let moduleName = packageJson.name.split("/").pop();
 
-        return `./dist/${packageJson.name}/src/${pkgNameSplit[pkgNameSplit.length - 1]}.js`;
+        return `./dist/${target}/${moduleName}/src/${moduleName}.js`;
     },
 
-    getRollupOutputPath: (packageJson, format, minify) => {
+    getRollupOutputPath: (packageJson, format, target, minify) => {
 
-        let pkgNameSplit  = packageJson.name.split("/"),
-            bundleFolder  = format === "umd" ? "bundles" : "@ng-dynamic-forms",
+        let moduleName  = packageJson.name.split("/").pop(),
+            bundleFolder  = format === "umd" ? "bundles" : `${target.slice(0, 2)}m${target.slice(2)}`,
+            formatExtension = format === "umd" ? ".umd" : "",
             fileExtension = minify ? "min." : "";
 
-        return `./dist/${packageJson.name}/${bundleFolder}/${pkgNameSplit[pkgNameSplit.length - 1]}.${format}.${fileExtension}js`;
+        return `./dist/${packageJson.name}/${bundleFolder}/${moduleName}${formatExtension}.${fileExtension}js`;
     },
 
     getRollupPlugins: minify => {
 
-        const plugins = [resolve(), sourcemaps()];
+        const plugins = [alias(rxjsPathMapping), resolve(), sourcemaps()];
 
         if (minify) {
             plugins.push(uglify({output: {comments: (node, comment) => comment.value.startsWith("!")}}));
@@ -67,12 +74,20 @@ const utils = {
             "angular2-text-mask": "angular2-text-mask",
             "ionic-angular": "ionic-angular",
             "ionic-angular/index": "ionic-angular",
+            "ngx-bootstrap/datepicker": "ngx-bootstrap.umd",
+            "ngx-bootstrap/timepicker": "ngx-bootstrap.umd",
             "primeng/primeng": "primeng/primeng",
+            "rxjs/BehaviorSubject": "Rx.BehaviorSubject",
             "rxjs/Observable": "Rx.Observable",
             "rxjs/Subject": "Rx.Subject",
             "rxjs/Subscription": "Rx.Subscription",
             "rxjs/add/observable/of": "rxjs/add/observable/of",
-            "rxjs/add/operator/map": "rxjs/add/operator/map"
+            "rxjs/add/operator/map": "rxjs/add/operator/map",
+            "rxjs/operator/map": "rxjs/operator/map",
+            "rxjs/operator/distinctUntilChanged": "rxjs/operator/distinctUntilChanged",
+            "rxjs/operator/observeOn": "rxjs/operator/observeOn",
+            "rxjs/operator/scan": "rxjs/operator/scan",
+            "rxjs/scheduler/queue": "rxjs/scheduler/queue"
         };
     }
 };

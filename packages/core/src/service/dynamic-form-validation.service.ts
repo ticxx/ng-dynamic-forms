@@ -1,98 +1,86 @@
-import { Injectable, Inject, Optional } from "@angular/core";
+import { InjectionToken, Injectable, Inject, Optional } from "@angular/core";
 import {
     AbstractControl,
     AsyncValidatorFn,
-    FormArray,
-    FormControl,
-    FormGroup,
     ValidatorFn,
     Validators,
     NG_VALIDATORS,
     NG_ASYNC_VALIDATORS
 } from "@angular/forms";
+import { DynamicFormControlModel } from "../model/dynamic-form-control.model";
 import {
-    DynamicFormControlModel,
-    DynamicValidatorConfig,
-    DynamicValidatorsMap
-} from "../model/dynamic-form-control.model";
-import { Utils } from "../utils/core.utils";
-import { ValidationUtils } from "../utils/validation.utils";
+    DynamicValidatorDescriptor,
+    DynamicValidatorsConfig
+} from "../model/misc/dynamic-form-control-validation.model";
 
-export type ValidatorFactory = (args: any) => ValidatorFn | AsyncValidatorFn;
+export type Validator = ValidatorFn | AsyncValidatorFn;
 
-export type ValidatorsToken = (ValidatorFn | AsyncValidatorFn)[];
+export type ValidatorFactory = (args: any) => Validator;
 
-export interface ValidatorFnParams {
+export type ValidatorsToken = Validator[];
 
-    validatorName: string;
-    validatorArgs: any;
-}
+export type ValidatorsMap = Map<string, Validator | ValidatorFactory>;
+
+export const DYNAMIC_VALIDATORS = new InjectionToken<ValidatorsMap>("DYNAMIC_VALIDATORS");
 
 @Injectable()
 export class DynamicFormValidationService {
 
     constructor(@Optional() @Inject(NG_VALIDATORS) private NG_VALIDATORS: ValidatorFn[],
-                @Optional() @Inject(NG_ASYNC_VALIDATORS) private NG_ASYNC_VALIDATORS: AsyncValidatorFn[]) {}
-
-
-    private getValidatorFnParams(validatorFnKey: string, validatorConfig: any): ValidatorFnParams {
-
-        let validatorName,
-            validatorArgs = null;
-
-        if (ValidationUtils.isExpandedValidatorConfig(validatorConfig)) {
-
-            validatorName = (validatorConfig as DynamicValidatorConfig).name;
-            validatorArgs = (validatorConfig as DynamicValidatorConfig).args;
-
-        } else {
-
-            validatorName = validatorFnKey;
-            validatorArgs = validatorConfig;
-        }
-
-        return {validatorName, validatorArgs};
-    }
+                @Optional() @Inject(NG_ASYNC_VALIDATORS) private NG_ASYNC_VALIDATORS: AsyncValidatorFn[],
+                @Optional() @Inject(DYNAMIC_VALIDATORS) private DYNAMIC_VALIDATORS: Map<string, Validator | ValidatorFactory>) {}
 
 
     private getValidatorFn(validatorName: string, validatorArgs: any = null,
-                           validatorsToken: ValidatorsToken = this.NG_VALIDATORS): ValidatorFn | AsyncValidatorFn | never {
+                           validatorsToken: ValidatorsToken = this.NG_VALIDATORS): Validator | never {
 
-        let validatorFn: ValidatorFactory | ValidatorFn | AsyncValidatorFn | undefined;
+        let validatorFn: ValidatorFactory | Validator | undefined;
 
-        if (Validators.hasOwnProperty(validatorName)) { // Angular Standard Validators
+        if (Validators.hasOwnProperty(validatorName)) { // Built-in Angular Validators
 
             validatorFn = (Validators as any)[validatorName];
 
-        } else if (validatorsToken) { // Custom Validators
+        } else { // Custom Validators
 
-            validatorFn = validatorsToken.find(validatorFn => validatorFn.name === validatorName);
+            if (this.DYNAMIC_VALIDATORS && this.DYNAMIC_VALIDATORS.has(validatorName)) {
+                validatorFn = this.DYNAMIC_VALIDATORS.get(validatorName);
+
+            } else if (validatorsToken) {
+                validatorFn = validatorsToken.find(validatorFn => validatorFn.name === validatorName);
+            }
         }
 
-        if (validatorFn === undefined) {
-            throw new Error(`validator "${validatorName}" is not provided via NG_VALIDATORS or NG_ASYNC_VALIDATORS`);
+        if (validatorFn === undefined) { // throw when no validator could be resolved
+            throw new Error(`validator "${validatorName}" is not provided via NG_VALIDATORS, NG_ASYNC_VALIDATORS or DYNAMIC_FORM_VALIDATORS`);
         }
 
         if (validatorArgs !== null) {
-            return (validatorFn as Function)(validatorArgs);
+            return (validatorFn as ValidatorFactory)(validatorArgs);
         }
 
-        return validatorFn as ValidatorFn | AsyncValidatorFn;
+        return validatorFn as Validator;
     }
 
 
-    private getValidatorFns(validatorsConfig: DynamicValidatorsMap,
-                            validatorsToken: ValidatorsToken = this.NG_VALIDATORS): ValidatorFn[] | AsyncValidatorFn[] {
+    private getValidatorFns(validatorsConfig: DynamicValidatorsConfig,
+                            validatorsToken: ValidatorsToken = this.NG_VALIDATORS): Validator[] {
 
-        let validatorFns: ValidatorFn[] | AsyncValidatorFn[] = [];
+        let validatorFns: Validator[] = [];
 
-        if (Utils.isNonEmptyObject(validatorsConfig)) {
+        if (validatorsConfig && typeof validatorsConfig === "object") {
 
-            validatorFns = Object.keys(validatorsConfig).map(validatorFnKey => {
+            validatorFns = Object.keys(validatorsConfig).map(validatorConfigKey => {
 
-                let params = this.getValidatorFnParams(validatorFnKey, validatorsConfig[validatorFnKey]);
+                let validatorConfigValue = validatorsConfig[validatorConfigKey];
 
-                return this.getValidatorFn(params.validatorName, params.validatorArgs, validatorsToken);
+                if (this.isValidatorDescriptor(validatorConfigValue)) {
+
+                    let descriptor = validatorConfigValue as DynamicValidatorDescriptor;
+
+                    return this.getValidatorFn(descriptor.name, descriptor.args, validatorsToken);
+                }
+
+                return this.getValidatorFn(validatorConfigKey, validatorConfigValue, validatorsToken);
             });
         }
 
@@ -100,7 +88,7 @@ export class DynamicFormValidationService {
     }
 
 
-    private parseErrorMessageTemplate(template: string, model: DynamicFormControlModel, error: any = null): string {
+    private parseErrorMessageConfig(template: string, model: DynamicFormControlModel, error: any = null): string {
 
         return template.replace(/{{\s*(.+?)\s*}}/mg, (_match: string, expression: string) => {
 
@@ -118,43 +106,53 @@ export class DynamicFormValidationService {
     }
 
 
-    getValidator(validatorsConfig: DynamicValidatorsMap, validatorsToken: ValidatorsToken = this.NG_VALIDATORS): ValidatorFn | null {
-
-        if (Utils.isNonEmptyObject(validatorsConfig)) {
-
-            let validatorFnKey = Object.keys(validatorsConfig)[0],
-                params = this.getValidatorFnParams(validatorFnKey, validatorsConfig[validatorFnKey]);
-
-            return this.getValidatorFn(
-                params.validatorName, params.validatorArgs, validatorsToken) as ValidatorFn;
-        }
-
-        return null;
-    }
-
-
-    getAsyncValidator(validatorsConfig: DynamicValidatorsMap): AsyncValidatorFn | null {
-        return this.getValidator(validatorsConfig, this.NG_ASYNC_VALIDATORS) as AsyncValidatorFn;
-    }
-
-
-    getValidatorByName(validatorName: string, validatorArgs: any = null): ValidatorFn {
+    getValidator(validatorName: string, validatorArgs: any = null): ValidatorFn {
         return this.getValidatorFn(validatorName, validatorArgs) as ValidatorFn;
     }
 
 
-    getAsyncValidatorByName(validatorName: string, validatorArgs: any = null): AsyncValidatorFn {
+    getAsyncValidator(validatorName: string, validatorArgs: any = null): AsyncValidatorFn {
         return this.getValidatorFn(validatorName, validatorArgs, this.NG_ASYNC_VALIDATORS) as AsyncValidatorFn;
     }
 
 
-    getValidators(validatorsConfig: DynamicValidatorsMap): ValidatorFn[] {
+    getValidators(validatorsConfig: DynamicValidatorsConfig): ValidatorFn[] {
         return this.getValidatorFns(validatorsConfig) as ValidatorFn[];
     }
 
 
-    getAsyncValidators(validatorsConfig: DynamicValidatorsMap): AsyncValidatorFn[] {
-        return this.getValidatorFns(validatorsConfig, this.NG_ASYNC_VALIDATORS) as AsyncValidatorFn[];
+    getAsyncValidators(asyncValidatorsConfig: DynamicValidatorsConfig): AsyncValidatorFn[] {
+        return this.getValidatorFns(asyncValidatorsConfig, this.NG_ASYNC_VALIDATORS) as AsyncValidatorFn[];
+    }
+
+
+    updateValidators(validatorsConfig: DynamicValidatorsConfig | null, control: AbstractControl,
+                     model: DynamicFormControlModel): void {
+
+        model.validators = validatorsConfig;
+
+        if (validatorsConfig === null) {
+
+            control.clearValidators();
+
+        } else {
+            control.setValidators(this.getValidators(validatorsConfig));
+        }
+    }
+
+
+    updateAsyncValidators(asyncValidatorsConfig: DynamicValidatorsConfig | null, control: AbstractControl,
+                          model: DynamicFormControlModel): void {
+
+        model.asyncValidators = asyncValidatorsConfig;
+
+        if (asyncValidatorsConfig === null) {
+
+            control.clearAsyncValidators();
+
+        } else {
+            control.setAsyncValidators(this.getAsyncValidators(asyncValidatorsConfig));
+        }
     }
 
 
@@ -162,39 +160,43 @@ export class DynamicFormValidationService {
 
         let messages: string[] = [];
 
-        if (model.errorMessages !== null) {
+        if (typeof model.errorMessages === "object" && model.errorMessages !== null) {
 
-            let errorMessages = model.errorMessages as DynamicValidatorsMap;
+            let messagesConfig = model.errorMessages as DynamicValidatorsConfig;
 
-            if (control instanceof FormControl) {
+            Object.keys(control.errors || {}).forEach(validationErrorKey => {
 
-                Object.keys(control.errors || {}).forEach(errorCode => {
+                let messageKey = validationErrorKey;
 
-                    let messageKey = Utils.equals(errorCode, "minlength", "maxlength") ?
-                        errorCode.replace("length", "Length") : errorCode;
-
-                    if (errorMessages.hasOwnProperty(messageKey)) {
-
-                        let error = control.getError(errorCode),
-                            template = errorMessages[messageKey] as string;
-
-                        messages.push(this.parseErrorMessageTemplate(template, model, error));
-                    }
-                });
-
-            } else if (control instanceof FormGroup || control instanceof FormArray) {
-
-                let messageKey = Object.keys(errorMessages)[0] as string;
-
-                if (errorMessages.hasOwnProperty(messageKey)) {
-
-                    let template = errorMessages[messageKey] as string;
-
-                    messages.push(this.parseErrorMessageTemplate(template, model));
+                if (validationErrorKey === "minlength" || validationErrorKey === "maxlength") {
+                    messageKey = messageKey.replace("length", "Length");
                 }
-            }
+
+                if (messagesConfig.hasOwnProperty(messageKey)) {
+
+                    let validationError = control.getError(validationErrorKey),
+                        messageTemplate = messagesConfig[messageKey] as string;
+
+                    messages.push(this.parseErrorMessageConfig(messageTemplate, model, validationError));
+                }
+            });
         }
 
         return messages;
+    }
+
+
+    isFormHook(value: any): boolean {
+        return typeof value === "string" && ["blur", "change", "submit"].indexOf(value) !== -1;
+    }
+
+
+    isValidatorDescriptor(value: any): boolean {
+
+        if (value !== null && typeof value === "object") {
+            return value.hasOwnProperty("name") && value.hasOwnProperty("args");
+        }
+
+        return false;
     }
 }

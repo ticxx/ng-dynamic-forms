@@ -1,3 +1,5 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 <div class="content-margin" style="width: 50%;">
 
     <mat-card>
@@ -5,10 +7,11 @@
         <form [formGroup]="formGroup">
 
             <dynamic-material-form [group]="formGroup"
+                                   [layout]="formLayout"
                                    [model]="formModel"
-                                   (blur)="onBlur($event)"
-                                   (change)="onChange($event)"
-                                   (focus)="onFocus($event)"
+                                   (dfBlur)="onBlur($event)"
+                                   (dfChange)="onChange($event)"
+                                   (dfFocus)="onFocus($event)"
                                    (matEvent)="onMatEvent($event)"></dynamic-material-form>
 
         </form>

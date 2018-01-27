@@ -8,7 +8,12 @@
     <form class="form-horizontal" [formGroup]="formGroup">
 
         <dynamic-ng-bootstrap-form [group]="formGroup"
-                                   [model]="formModel"></dynamic-ng-bootstrap-form>
+                                   [layout]="formLayout"
+                                   [model]="formModel"
+                                   (dfBlur)="onBlur($event)"
+                                   (dfChange)="onChange($event)"
+                                   (dfFocus)="onFocus($event)"
+                                   (ngbEvent)="onNgbEvent($event)"></dynamic-ng-bootstrap-form>
 
     </form>
 

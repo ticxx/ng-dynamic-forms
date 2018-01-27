@@ -14,6 +14,7 @@ import { FormGroup } from "@angular/forms";
 import {
     MatAutocomplete,
     MatCheckbox,
+    MatChipInputEvent,
     MatDatepicker,
     MatFormField,
     MatInput,
@@ -23,12 +24,16 @@ import {
     MatSlideToggle
 } from "@angular/material";
 import {
-    DynamicFormValidationService,
-    DynamicFormControlComponent,
-    DynamicFormControlModel,
     DynamicFormArrayGroupModel,
+    DynamicFormControlComponent,
     DynamicFormControlEvent,
+    DynamicFormControlModel,
+    DynamicFormValueControlModel,
+    DynamicFormLayout,
+    DynamicFormLayoutService,
+    DynamicFormValidationService,
     DynamicTemplateDirective,
+    DynamicInputControlModel,
     DynamicInputModel,
     DYNAMIC_FORM_CONTROL_TYPE_ARRAY,
     DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX,
@@ -53,15 +58,17 @@ export type MatFormControlComponent = MatAutocomplete | MatCheckbox | MatDatepic
 })
 export class DynamicMaterialFormControlComponent extends DynamicFormControlComponent implements OnChanges {
 
+    private chipList: string[] | null = null;
     private _showCharacterCount: boolean = false;
 
-    @ContentChildren(DynamicTemplateDirective) contentTemplates: QueryList<DynamicTemplateDirective>;
-    @Input("templates") inputTemplates: QueryList<DynamicTemplateDirective>;
+    @ContentChildren(DynamicTemplateDirective) contentTemplateList: QueryList<DynamicTemplateDirective>;
+    @Input("templates") inputTemplateList: QueryList<DynamicTemplateDirective>;
 
     @Input() bindId: boolean = true;
     @Input() context: DynamicFormArrayGroupModel | null = null;
     @Input() group: FormGroup;
     @Input() hasErrorMessaging: boolean = false;
+    @Input() layout: DynamicFormLayout;
     @Input() model: DynamicFormControlModel;
 
     @Input()
@@ -73,9 +80,9 @@ export class DynamicMaterialFormControlComponent extends DynamicFormControlCompo
         this._showCharacterCount = value;
     }
 
-    @Output() blur: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
-    @Output() change: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
-    @Output() focus: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
+    @Output("dfBlur") blur: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
+    @Output("dfChange") change: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
+    @Output("dfFocus") focus: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
     @Output("matEvent") customEvent: EventEmitter<DynamicFormControlEvent> = new EventEmitter<DynamicFormControlEvent>();
 
     @ViewChild(MAT_VIEW_CHILD_SELECTOR) matViewChild: MatFormControlComponent | undefined;
@@ -83,17 +90,17 @@ export class DynamicMaterialFormControlComponent extends DynamicFormControlCompo
 
     type: MatFormControlType | null;
 
-    constructor(protected changeDetectorRef: ChangeDetectorRef,
+    constructor(protected changeDetectorRef: ChangeDetectorRef, protected layoutService: DynamicFormLayoutService,
                 protected validationService: DynamicFormValidationService) {
 
-        super(changeDetectorRef, validationService);
+        super(changeDetectorRef, layoutService, validationService);
     }
 
     ngOnChanges(changes: SimpleChanges) {
         super.ngOnChanges(changes);
 
         if (changes["model"]) {
-            this.type = DynamicMaterialFormControlComponent.getFormControlType(this.model);
+            this.updateFormControlType();
         }
     }
 
@@ -101,8 +108,45 @@ export class DynamicMaterialFormControlComponent extends DynamicFormControlCompo
         return this.matInput ? this.matInput.value.length : null;
     }
 
-    get asMatFormField(): boolean {
-        return this.type === 5 || this.type === 7 || this.type === 10;
+    get characterHint(): string {
+        return `${this.characterCount} / ${(this.model as DynamicInputControlModel<string>).maxLength}`;
+    }
+
+    get hasMatFormField(): boolean {
+        return this.type === 3 || this.type === 4 || this.type === 6 || this.type === 8 || this.type === 11;
+    }
+
+    onChipInputTokenEnd($event: MatChipInputEvent): void {
+
+        let inputElement = $event.input, inputValue = $event.value.trim();
+
+        if (Array.isArray(this.chipList) && inputValue.length > 0) {
+
+            this.chipList.push(inputValue);
+            this.control.patchValue(this.chipList);
+        }
+
+        if (inputElement instanceof HTMLInputElement) {
+            inputElement.value = "";
+        }
+    }
+
+    onChipRemoved(_chip: string, index: number): void {
+
+        if (Array.isArray(this.chipList)) {
+
+            this.chipList.splice(index, 1);
+            this.control.patchValue(this.chipList);
+        }
+    }
+
+    updateFormControlType(): void {
+
+        this.type = DynamicMaterialFormControlComponent.getFormControlType(this.model);
+
+        if (this.type === MatFormControlType.Chips) {
+            this.chipList = (this.model as DynamicFormValueControlModel<string[]>).value || [];
+        }
     }
 
     static getFormControlType(model: DynamicFormControlModel): MatFormControlType | null {
@@ -123,7 +167,9 @@ export class DynamicMaterialFormControlComponent extends DynamicFormControlCompo
                 return MatFormControlType.DatePicker;
 
             case DYNAMIC_FORM_CONTROL_TYPE_INPUT:
-                return MatFormControlType.Input;
+                let inputModel = model as DynamicInputModel;
+
+                return inputModel.multiple ? MatFormControlType.Chips : MatFormControlType.Input;
 
             case DYNAMIC_FORM_CONTROL_TYPE_RADIO_GROUP:
                 return MatFormControlType.RadioGroup;

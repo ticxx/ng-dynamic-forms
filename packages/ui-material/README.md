@@ -49,6 +49,7 @@ with **`DynamicMaterialFormControlComponent`**:
 | **[Autocomplete](https://material.angular.io/components/component/autocomplete)** 	| `DynamicInputModel`         	|       `list`      	|
 |     **[Checkbox](https://material.angular.io/components/component/checkbox)**     	| `DynamicCheckboxModel`      	|         –         	|
 |  **[Checkbox Group](https://material.angular.io/components/component/checkbox)**  	| `DynamicCheckboxGroupModel` 	|         –         	|
+|        **[Chips](https://material.angular.io/components/component/chips)**        	| `DynamicInputModel`         	|  `multiple: true` 	|
 |   **[Datepicker](https://material.angular.io/components/component/datepicker)**   	| `DynamicDatePickerModel`    	|         –         	|
 |        **[Input](https://material.angular.io/components/component/input)**        	| `DynamicInputModel`         	|         –         	|
 |     **[Radio Group](https://material.angular.io/components/component/radio)**     	| `DynamicRadioGroupModel`    	|         –         	|
@@ -63,10 +64,11 @@ with **`DynamicMaterialFormControlComponent`**:
 
     <dynamic-material-form [group]="myFormGroup"
                            [model]="myFormModel"
-                           (marEvent)="onMatEvent($event)"></dynamic-material-form>
+                           (matEvent)="onMatEvent($event)"></dynamic-material-form>
 </form>
 ```
 
-## Sample
+## Resources
 
-[**Live Demo**](http://ng2-dynamic-forms.udos86.de/sample/index.aot.html#material-sample-form) 
+* [**API Documentation**](http://ng2-dynamic-forms.udos86.de/docs/ui-material/)
+* [**Live Sample**](http://ng2-dynamic-forms.udos86.de/sample/index.aot.html#material-sample-form) 

@@ -1,234 +1,254 @@
-<div [class.form-group]="asBootstrapFormGroup || model.cls.element.container.includes('form-group')"
+<div [class.form-group]="asBootstrapFormGroup || getClass('element', 'container').includes('form-group')"
      [class.has-error]="showErrorMessages"
      [formGroup]="group"
-     [ngClass]="[model.cls.element.container, model.cls.grid.container]">
+
+     [ngClass]="[getClass('element', 'container'), getClass('grid', 'container')]">
 
     <label *ngIf="type !== 2 && model.label"
-           [attr.for]="model.id"
+           [for]="model.id"
            [innerHTML]="model.label"
-           [ngClass]="[model.cls.element.label, model.cls.grid.label]"></label>
+           [ngClass]="[getClass('element', 'label'), getClass('grid', 'label')]"></label>
 
+    <ng-container *ngTemplateOutlet="templates[0]?.templateRef; context: model"></ng-container>
 
-    <ng-container *ngIf="type !== 1 && template?.align === 'START'">
-        <ng-container *ngTemplateOutlet="template?.templateRef; context: model"></ng-container>
-    </ng-container>
+    <!-- CHECKBOX ----------------------------------------------------------------------------------------------------->
+    <div *ngIf="type === 2" [ngClass]="getClass('grid', 'control')">
 
-
-    <div *ngIf="type === 2" [ngClass]="model.cls.grid.control">
-
-        <div [class.disabled]="model.disabled" [ngClass]="model.cls.element.control || 'checkbox'">
+        <div [class.disabled]="model.disabled" [ngClass]="getClass('element', 'control') || 'checkbox'">
 
             <label>
 
                 <input type="checkbox"
-                       [attr.tabindex]="model.tabIndex"
                        [checked]="model.checked"
                        [dynamicId]="bindId && model.id"
                        [formControlName]="model.id"
                        [indeterminate]="model.indeterminate"
                        [name]="model.name"
-                       [ngClass]="model.cls.element.control"
+                       [ngClass]="getClass('element', 'control')"
                        [required]="model.required"
+                       [tabindex]="model.tabIndex"
                        [value]="model.value"
-                       (blur)="onBlurEvent($event)"
+                       (blur)="onBlur($event)"
                        (change)="onValueChange($event)"
-                       (focus)="onFocusEvent($event)"/><span [innerHTML]="model.label"
-                                                             [ngClass]="[model.cls.element.label, model.cls.grid.label]"></span></label>
+                       (focus)="onFocus($event)"/><span [innerHTML]="model.label"
+                       [ngClass]="[getClass('element', 'label'), getClass('grid', 'label')]"></span></label>
         </div>
 
     </div>
 
 
-    <div *ngIf="type !== 2" [ngClass]="model.cls.grid.control">
+    <div *ngIf="type !== 2" [ngClass]="getClass('grid', 'control')">
 
         <ng-container [ngSwitch]="type">
 
+            <!-- FORM ARRAY ------------------------------------------------------------------------------------------->
             <div *ngSwitchCase="1"
                  [dynamicId]="bindId && model.id"
                  [formArrayName]="model.id"
-                 [ngClass]="model.cls.element.control">
+                 [ngClass]="getClass('element', 'control')">
 
                 <div *ngFor="let groupModel of model.groups; let idx = index" role="group"
-                     [formGroupName]="idx" [ngClass]="[model.cls.element.group, model.cls.grid.group]">
+                     [formGroupName]="idx" [ngClass]="[getClass('element', 'group'), getClass('grid', 'group')]">
 
-                    <dynamic-bootstrap-form-control *ngFor="let controlModel of groupModel.group"
+                    <dynamic-bootstrap-form-control *ngFor="let _model of groupModel.group"
                                                     [bindId]="false"
                                                     [context]="groupModel"
                                                     [group]="control.at(idx)"
-                                                    [hasErrorMessaging]="controlModel.hasErrorMessages"
-                                                    [model]="controlModel"
-                                                    [templates]="templates"
-                                                    [ngClass]="[controlModel.cls.element.host, controlModel.cls.grid.host]"
-                                                    (blur)="onBlurEvent($event)"
-                                                    (change)="onValueChange($event)"
-                                                    (focus)="onFocusEvent($event)"></dynamic-bootstrap-form-control>
+                                                    [hasErrorMessaging]="_model.hasErrorMessages"
+                                                    [hidden]="_model.hidden"
+                                                    [layout]="layout"
+                                                    [model]="_model"
+                                                    [templates]="templateList"
+                                                    [ngClass]="[getClass('element', 'host', _model), getClass('grid', 'host', _model)]"
+                                                    (dfBlur)="onBlur($event)"
+                                                    (dfChange)="onValueChange($event)"
+                                                    (dfFocus)="onFocus($event)"></dynamic-bootstrap-form-control>
 
-                    <ng-container *ngTemplateOutlet="template?.templateRef; context: groupModel"></ng-container>
+                    <ng-container *ngTemplateOutlet="templates[2]?.templateRef; context: groupModel"></ng-container>
 
                 </div>
 
             </div>
 
-
-            <fieldset *ngSwitchCase="3"
-                      [dynamicId]="bindId && model.id"
-                      [formGroupName]="model.id"
-                      [name]="model.name"
-                      [ngClass]="model.cls.element.control">
-
-                <legend *ngIf="model.legend" [innerHTML]="model.legend"></legend>
-
-                <dynamic-bootstrap-form-control *ngFor="let controlModel of model.group"
-                                                [asBootstrapFormGroup]="false"
-                                                [group]="control"
-                                                [hasErrorMessaging]="controlModel.hasErrorMessages"
-                                                [model]="controlModel"
-                                                [templates]="templates"
-                                                [ngClass]="[controlModel.cls.element.host, controlModel.cls.grid.host]"
-                                                (blur)="onBlurEvent($event)"
-                                                (change)="onValueChange($event)"
-                                                (focus)="onFocusEvent($event)"></dynamic-bootstrap-form-control>
-            </fieldset>
-
-            <!--
-            <div *ngSwitchCase="99" class="input-group">
+            <!-- DATEPICKER ------------------------------------------------------------------------------------------->
+            <div *ngSwitchCase="3" class="input-group">
 
                 <input bsDatepicker class="form-control" #bsDatepicker="bsDatepicker"
                        [autofocus]="model.autoFocus"
+                       [bsConfig]="getAdditional('bsConfig', {containerClass: getAdditional('containerClass', 'theme-green'), showWeekNumbers: getAdditional('showWeekNumbers', true)})"
                        [dynamicId]="bindId && model.id"
                        [formControlName]="model.id"
                        [maxDate]="model.max"
                        [minDate]="model.min"
                        [name]="model.name"
-                       [ngClass]="model.cls.element.control"
+                       [ngClass]="getClass('element', 'control')"
+                       [outsideClick]="getAdditional('outsideClick', true)"
                        [placeholder]="model.placeholder"
+                       [placement]="getAdditional('placement', 'bottom')"
                        [readonly]="model.readOnly"
-                       [required]="model.required">
+                       [required]="model.required"
+                       (bsValueChange)="onValueChange($event)"
+                       (onHidden)="onCustomEvent($event, 'onHidden')"
+                       (onShown)="onCustomEvent($event, 'onShown')">
 
-                <div class="input-group-btn">
-                    <button class="btn" (click)="bsDatepicker.toggle()"><img [src]="model.toggleIcon" /></button>
+                <div *ngIf="model.toggleLabel" class="input-group-btn">
+                    <button *ngIf="model.toggleIcon" class="btn" (click)="bsDatepicker.toggle()"><img [src]="model.toggleIcon" /></button>
+                    <button *ngIf="model.toggleLabel" class="btn" (click)="bsDatepicker.toggle()">{{ model.toggleLabel }}</button>
                 </div>
 
             </div>
-            -->
 
-            <div *ngSwitchCase="4" [class.input-group]="model.prefix || model.suffix">
+            <!-- FORM GROUP ------------------------------------------------------------------------------------------->
+            <fieldset *ngSwitchCase="4"
+                      [dynamicId]="bindId && model.id"
+                      [formGroupName]="model.id"
+                      [name]="model.name"
+                      [ngClass]="getClass('element', 'control')">
+
+                <legend *ngIf="model.legend" [innerHTML]="model.legend"></legend>
+
+                <dynamic-bootstrap-form-control *ngFor="let _model of model.group"
+                                                [asBootstrapFormGroup]="false"
+                                                [group]="control"
+                                                [hasErrorMessaging]="_model.hasErrorMessages"
+                                                [hidden]="_model.hidden"
+                                                [layout]="layout"
+                                                [model]="_model"
+                                                [templates]="templateList"
+                                                [ngClass]="[getClass('element', 'host', _model), getClass('grid', 'host', _model)]"
+                                                (dfBlur)="onBlur($event)"
+                                                (dfChange)="onValueChange($event)"
+                                                (dfFocus)="onFocus($event)"></dynamic-bootstrap-form-control>
+            </fieldset>
+
+            <!-- INPUT ------------------------------------------------------------------------------------------------>
+            <div *ngSwitchCase="5" [class.input-group]="model.prefix || model.suffix">
 
                 <div *ngIf="model.prefix" class="input-group-addon" [innerHTML]="model.prefix"></div>
 
                 <input class="form-control"
                        [attr.accept]="model.accept"
-                       [attr.autoComplete]="model.autoComplete"
                        [attr.list]="model.listId"
                        [attr.max]="model.max"
                        [attr.min]="model.min"
                        [attr.multiple]="model.multiple"
                        [attr.step]="model.step"
-                       [attr.tabindex]="model.tabIndex"
+                       [autocomplete]="model.autoComplete"
                        [autofocus]="model.autoFocus"
                        [dynamicId]="bindId && model.id"
                        [formControlName]="model.id"
                        [maxlength]="model.maxLength"
                        [minlength]="model.minLength"
                        [name]="model.name"
-                       [ngClass]="model.cls.element.control"
+                       [ngClass]="getClass('element', 'control')"
                        [pattern]="model.pattern"
                        [placeholder]="model.placeholder"
                        [readonly]="model.readOnly"
                        [required]="model.required"
                        [spellcheck]="model.spellCheck"
+                       [tabindex]="model.tabIndex"
                        [textMask]="{mask: (model.mask || false), showMask: model.mask && !(model.placeholder)}"
                        [type]="model.inputType"
-                       (blur)="onBlurEvent($event)"
+                       (blur)="onBlur($event)"
                        (change)="onValueChange($event)"
-                       (focus)="onFocusEvent($event)"/>
+                       (focus)="onFocus($event)"/>
 
                 <div *ngIf="model.suffix" class="input-group-addon" [innerHTML]="model.suffix"></div>
 
-                <datalist *ngIf="model.list" [id]="model.listId">
+                <datalist *ngIf="hasList" [id]="model.listId">
                     <option *ngFor="let option of model.list" [value]="option">
                 </datalist>
 
             </div>
 
-
-            <fieldset *ngSwitchCase="5" role="radiogroup"
-                      [attr.tabindex]="model.tabIndex"
+            <!-- RADIO GROUP ------------------------------------------------------------------------------------------>
+            <fieldset *ngSwitchCase="6" role="radiogroup"
                       [dynamicId]="bindId && model.id"
                       [name]="model.name"
-                      [ngClass]="model.cls.element.control"
+                      [ngClass]="getClass('element', 'control')"
+                      [tabindex]="model.tabIndex"
                       (change)="onValueChange($event)">
 
                 <legend *ngIf="model.legend" [innerHTML]="model.legend"></legend>
 
-                <div *ngFor="let option of model.options$ | async" [ngClass]="model.cls.element.option || 'radio'">
+                <div *ngFor="let option of model.options$ | async" [ngClass]="getClass('element', 'option') || 'radio'">
 
                     <label>
-
                         <input type="radio"
                                [formControlName]="model.id"
                                [name]="model.name"
                                [value]="option.value"
-                               (blur)="onBlurEvent($event)"
-                               (focus)="onFocusEvent($event)"/><span [innerHTML]="option.label"></span></label>
+                               (blur)="onBlur($event)"
+                               (focus)="onFocus($event)"/><span [innerHTML]="option.label"></span></label>
                 </div>
 
             </fieldset>
 
-
-            <select *ngSwitchCase="6" class="form-control"
-                    [attr.tabindex]="model.tabIndex"
+            <!-- SELECT ----------------------------------------------------------------------------------------------->
+            <select *ngSwitchCase="7" class="form-control"
                     [dynamicId]="bindId && model.id"
                     [formControlName]="model.id"
                     [name]="model.name"
-                    [ngClass]="model.cls.element.control"
+                    [ngClass]="getClass('element', 'control')"
                     [required]="model.required"
-                    (blur)="onBlurEvent($event)"
+                    [tabindex]="model.tabIndex"
+                    (blur)="onBlur($event)"
                     (change)="onValueChange($event)"
-                    (focus)="onFocusEvent($event)">
+                    (focus)="onFocus($event)">
 
                 <option *ngFor="let option of model.options$ | async"
-                        [attr.name]="model.name"
-                        [ngValue]="option.value">{{ option.label }}
-                </option>
+                        [disabled]="option.disabled"
+                        [ngValue]="option.value">{{ option.label }}</option>
 
             </select>
 
-
-            <textarea *ngSwitchCase="7" class="form-control"
-                      [attr.tabindex]="model.tabIndex"
+            <!-- TEXTAREA --------------------------------------------------------------------------------------------->
+            <textarea *ngSwitchCase="8" class="form-control"
                       [dynamicId]="bindId && model.id"
                       [cols]="model.cols"
                       [formControlName]="model.id"
                       [maxlength]="model.maxLength"
                       [minlength]="model.minLength"
                       [name]="model.name"
-                      [ngClass]="model.cls.element.control"
+                      [ngClass]="getClass('element', 'control')"
                       [placeholder]="model.placeholder"
                       [readonly]="model.readOnly"
                       [required]="model.required"
                       [rows]="model.rows"
                       [spellcheck]="model.spellCheck"
+                      [tabindex]="model.tabIndex"
                       [wrap]="model.wrap"
-                      (blur)="onBlurEvent($event)"
+                      (blur)="onBlur($event)"
                       (change)="onValueChange($event)"
-                      (focus)="onFocusEvent($event)"></textarea>
+                      (focus)="onFocus($event)"></textarea>
 
-            <span *ngIf="hasHint" class="help-block" [innerHTML]="model.hint" [ngClass]="model.cls.element.hint"></span>
+            <span *ngIf="showHint" class="help-block" [innerHTML]="model.hint" [ngClass]="getClass('element', 'hint')"></span>
+
+            <!-- TIMEPICKER ------------------------------------------------------------------------------------------->
+            <timepicker *ngSwitchCase="9"
+                        [arrowkeys]="getAdditional('arrowkeys', true)"
+                        [dynamicId]="bindId && model.id"
+                        [formControlName]="model.id"
+                        [hourStep]="getAdditional('hourStep', 1)"
+                        [max]="model.max"
+                        [min]="model.min"
+                        [mousewheel]="getAdditional('mousewheel', true)"
+                        [minuteStep]="getAdditional('minuteStep', 1)"
+                        [ngClass]="getClass('element', 'control')"
+                        [secondsStep]="getAdditional('secondsStep', 1)"
+                        [showMeridian]="model.meridian"
+                        [showSeconds]="model.showSeconds"
+                        [showSpinners]="getAdditional('spinners', true)"></timepicker>
 
         </ng-container>
 
     </div>
 
-
-    <ul *ngIf="showErrorMessages" class="has-error" [ngClass]="[model.cls.element.errors, model.cls.grid.errors]">
+    <ul *ngIf="showErrorMessages" class="has-error" [ngClass]="[getClass('element', 'errors'), getClass('grid', 'errors')]">
         <li *ngFor="let message of errorMessages" class="help-block">{{ message }}</li>
     </ul>
 
-
-    <ng-container *ngIf="type !== 1 && template?.align === 'END'">
-        <ng-container *ngTemplateOutlet="template?.templateRef; context: model"></ng-container>
-    </ng-container>
+    <ng-container *ngTemplateOutlet="templates[1]?.templateRef; context: model"></ng-container>
 
     <ng-content></ng-content>
 

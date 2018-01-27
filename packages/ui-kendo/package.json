@@ -1,9 +1,10 @@
 {
   "name": "@ng-dynamic-forms/ui-kendo",
-  "version": "1.4.34",
+  "version": "5.4.3",
   "description": "Kendo UI package for NG Dynamic Forms",
   "main": "./bundles/ui-kendo.umd.js",
-  "module": "./@ng-dynamic-forms/ui-kendo.es.js",
+  "module": "./esm5/ui-kendo.js",
+  "es2015": "./esm2015/ui-kendo.js",
   "typings": "./ui-kendo.d.ts",
   "keywords": [
     "angular",
@@ -24,16 +25,16 @@
     "email": "ng2-dynamic-forms@udos86.de",
     "url" : "https://github.com/udos86/ng-dynamic-forms"
   },
-  "license": "ISC",
+  "license": "SEE TELERIK KENDO UI FOR ANGULAR LICENSE",
   "bugs": {
     "url": "https://github.com/udos86/ng-dynamic-forms/issues"
   },
   "homepage": "https://github.com/udos86/ng-dynamic-forms#readme",
   "peerDependencies": {
-    "@angular/core": "^4.0.0",
-    "@angular/common": "^4.0.0",
-    "@angular/forms": "^4.0.0",
-    "@ng-dynamic-forms/core": "^1.4.34",
+    "@angular/core": "^5.0.0",
+    "@angular/common": "^5.0.0",
+    "@angular/forms": "^5.0.0",
+    "@ng-dynamic-forms/core": "^5.4.3",
     "@progress/kendo-angular-dateinputs": "^1.1.0",
     "@progress/kendo-angular-dropdowns": "^1.0.0",
     "@progress/kendo-angular-inputs": "^1.0.0",
@@ -43,6 +44,6 @@
     "@progress/kendo-angular-upload": "^1.0.0",
     "@progress/kendo-date-math": "^1.0.0",
     "@progress/kendo-theme-default": "^2.32.12",
-    "rxjs": "^5.2.0"
+    "rxjs": "^5.5.2"
   }
 }

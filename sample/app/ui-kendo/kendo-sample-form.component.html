@@ -3,13 +3,14 @@
     <form [formGroup]="formGroup" class="k-form">
 
         <dynamic-kendo-form [group]="formGroup"
+                            [layout]="formLayout"
                             [model]="formModel"
-                            (blur)="onBlur($event)"
-                            (change)="onChange($event)"
-                            (focus)="onFocus($event)"
+                            (dfBlur)="onBlur($event)"
+                            (dfChange)="onChange($event)"
+                            (dfFocus)="onFocus($event)"
                             (kendoEvent)="onKendoEvent($event)">
 
-            <ng-template modelId="kendoDropDownList" as="kendoDropDownListHeaderTemplate">
+            <ng-template modelId="roomSize" as="kendoDropDownListHeaderTemplate">
 
                 <p><b>Select your room</b></p>
 
