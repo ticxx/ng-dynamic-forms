@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { Http, BaseRequestOptions } from "@angular/http";
-import { MatCardModule, MatNativeDateModule, MATERIAL_COMPATIBILITY_MODE } from "@angular/material";
+import { HttpClientModule } from "@angular/common/http";
+import { MatCardModule, MatNativeDateModule } from "@angular/material";
 import { MockBackend } from "@angular/http/testing";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
@@ -45,12 +46,12 @@ export function mockBackendFactory(mockBackend: MockBackend, baseRequestOptions:
         BrowserModule,
         BrowserAnimationsModule,
         ReactiveFormsModule,
+        HttpClientModule,
         AppRoutingModule,
         MatNativeDateModule,
         MatCardModule,
         NgbDatepickerModule.forRoot(),
         NgbTimepickerModule.forRoot(),
-        //BsDatepickerModule.forRoot(),
         DynamicFormsCoreModule.forRoot(),
         DynamicFormsBasicUIModule,
         DynamicFormsBootstrapUIModule,
@@ -99,8 +100,13 @@ export function mockBackendFactory(mockBackend: MockBackend, baseRequestOptions:
             multi: true
         },
         {
-            provide: MATERIAL_COMPATIBILITY_MODE,
-            useValue: true
+            provide: DYNAMIC_VALIDATORS,
+            useValue: new Map<string, Validator | ValidatorFactory>([
+                ["customValidator", customValidator],
+                ["customDateRangeValidator", customDateRangeValidator],
+                ["customForbiddenValidator", customForbiddenValidator],
+                ["customAsyncFormGroupValidator", customAsyncFormGroupValidator]
+            ])
         }
     ],
     bootstrap: [AppComponent]

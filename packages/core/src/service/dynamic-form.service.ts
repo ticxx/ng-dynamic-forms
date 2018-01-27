@@ -118,7 +118,9 @@ export class DynamicFormService {
                     controls[model.id] = this.createFormGroup(groupModel.group, groupOptions, groupModel);
                     break;
                 case DYNAMIC_FORM_CONTROL_TYPE_LAYOUT_GROUP:
-                    this.addLayoutGroups(model, controls, parent);
+                    if ( parent ) {
+                        this.addLayoutGroups(model, controls, parent);
+                    }
                     break;
                 default:
 
@@ -133,9 +135,12 @@ export class DynamicFormService {
         let angularFormGroup: FormGroup= new FormGroup(controls, options);
             // this.formBuilder.group(formGroup, extra);
         this.dynamicFormLayoutGroupModels.forEach((dfl: DynamicFormLayoutGroupModel)=>{
-            let a: AbstractControl = angularFormGroup.get(dfl.parent.id);
-            if (a instanceof FormGroup) dfl.angularFormGroup=a;
-            // todo ?pop dfl
+            if ( dfl.parent && dfl.parent.id) {
+                let a: AbstractControl = <AbstractControl> angularFormGroup.get(dfl.parent.id);
+                if (a instanceof FormGroup) dfl.angularFormGroup = a;
+                // todo ?pop dfl
+            }
+
         });
         return angularFormGroup;
     }
@@ -151,22 +156,33 @@ export class DynamicFormService {
                 this.addLayoutGroups(dfc,formGroup,parent);
             }else if (dfc.type === DYNAMIC_FORM_CONTROL_TYPE_GROUP || dfc.type === DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX_GROUP) {
 
-                let formGroupModel = dfc as DynamicFormGroupModel,
-                    extra = this.createExtra(formGroupModel.validator, formGroupModel.asyncValidator);
+                let groupModel = model as DynamicFormGroupModel,
+                    groupOptions = this.createAbstractControlOptions(groupModel.validators,
+                        groupModel.asyncValidators, groupModel.updateOn);
 
-                formGroup[dfc.id] = this.createFormGroup(formGroupModel.group, extra, formGroupModel);
+                formGroup[dfc.id] = this.createFormGroup(groupModel.group, groupOptions, groupModel);
+
+                // let formGroupModel = dfc as DynamicFormGroupModel,
+                //     extra = this.createExtra(formGroupModel.validator, formGroupModel.asyncValidator);
+                //
+                // formGroup[dfc.id] = this.createFormGroup(formGroupModel.group, extra, formGroupModel);
 
             }else {
 
-                let formControlModel = dfc as DynamicFormValueControlModel<DynamicFormControlValue>;
-                formGroup[formControlModel.id] = new FormControl(
-                    {
-                        value: formControlModel.value,
-                        disabled: formControlModel.disabled
-                    },
-                    // Validators.compose(this.validationService.getValidators(formControlModel.validators)),
-                    // Validators.composeAsync(this.validationService.getAsyncValidators(formControlModel.asyncValidators))
-                );
+                let controlModel = model as DynamicFormValueControlModel<DynamicFormControlValue>,
+                    controlState = {value: controlModel.value, disabled: controlModel.disabled},
+                    controlOptions = this.createAbstractControlOptions(controlModel.validators,
+                        controlModel.asyncValidators, controlModel.updateOn);
+
+                formGroup[controlModel.id]  = new FormControl(controlState, controlOptions);
+
+                // let formControlModel = dfc as DynamicFormValueControlModel<DynamicFormControlValue>;
+                // formGroup[formControlModel.id] = new FormControl(
+                //     {
+                //         value: formControlModel.value,
+                //         disabled: formControlModel.disabled
+                //     },
+                // );
             }
         });
     }
