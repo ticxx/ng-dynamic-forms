@@ -4,22 +4,21 @@ const path        = require("path"),
 
 const format  = utils.getRollupFormat(process.argv),
       globals = utils.getRollupGlobals(),
-      target  = utils.getTarget(process.argv),
       minify  = utils.hasMinifyFlag(process.argv);
 
 export default {
 
-    input: utils.getRollupInputPath(packageJson, target),
+    input: utils.getRollupInputPath(packageJson),
     output: {
-        file: utils.getRollupOutputPath(packageJson, format, target, minify),
+        file: utils.getRollupOutputPath(packageJson, format, minify),
         format: format,
         name: "ngDF.core",
         globals: globals,
-        sourcemap: true,
-        exports: "named",
-        banner: utils.getBanner(packageJson)
+        sourcemap: true
     },
+    banner: utils.getBanner(packageJson),
     context: "this",
+    exports: "named",
     external: Object.keys(globals),
     plugins: utils.getRollupPlugins(minify),
 };

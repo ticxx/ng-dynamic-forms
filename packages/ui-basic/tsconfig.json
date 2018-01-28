@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.fesm5.json",
+  "files": [
+    "./public_api.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "flatModuleId": "@ng-dynamic-forms/ui-basic",
+    "flatModuleOutFile": "ui-basic.js",
+    "skipTemplateCodegen": true,
+    "strictMetadataEmit": true
+  }
+}

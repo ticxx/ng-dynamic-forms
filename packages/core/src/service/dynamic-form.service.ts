@@ -156,7 +156,7 @@ export class DynamicFormService {
                 this.addLayoutGroups(dfc,formGroup,parent);
             }else if (dfc.type === DYNAMIC_FORM_CONTROL_TYPE_GROUP || dfc.type === DYNAMIC_FORM_CONTROL_TYPE_CHECKBOX_GROUP) {
 
-                let groupModel = model as DynamicFormGroupModel,
+                let groupModel = dfc as DynamicFormGroupModel,
                     groupOptions = this.createAbstractControlOptions(groupModel.validators,
                         groupModel.asyncValidators, groupModel.updateOn);
 
@@ -169,7 +169,7 @@ export class DynamicFormService {
 
             }else {
 
-                let controlModel = model as DynamicFormValueControlModel<DynamicFormControlValue>,
+                let controlModel = dfc as DynamicFormValueControlModel<DynamicFormControlValue>,
                     controlState = {value: controlModel.value, disabled: controlModel.disabled},
                     controlOptions = this.createAbstractControlOptions(controlModel.validators,
                         controlModel.asyncValidators, controlModel.updateOn);

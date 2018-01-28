@@ -1,12 +1,12 @@
 const gulp       = require("gulp"),
       preprocess = require("gulp-preprocess");
 
-module.exports = function (src) {
+module.exports = function (src, dest) {
 
     return function () {
 
         return gulp.src(src)
                    .pipe(preprocess())
-                   .pipe(gulp.dest(file => file.base));
+                   .pipe(gulp.dest(dest));
     };
 };

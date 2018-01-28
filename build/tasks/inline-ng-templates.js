@@ -3,7 +3,7 @@ const gulp              = require("gulp"),
       htmlMinifier      = require("html-minifier"),
       inlineNg2Template = require("gulp-inline-ng2-template");
 
-module.exports = function (src) {
+module.exports = function (src, dest) {
 
     return function (/*done*/) {
 
@@ -30,12 +30,12 @@ module.exports = function (src) {
                        "filters": [/moduleId: module.id/]
                    }))
                    .pipe(inlineNg2Template({
+                       base: dest,
                        removeLineBreaks: true,
-                       removeModuleId: true,
                        target: "es5",
                        templateProcessor: minify,
                        useRelativePaths: true
                    }))
-                   .pipe(gulp.dest(file => file.base));
+                   .pipe(gulp.dest(dest));
     }
 };

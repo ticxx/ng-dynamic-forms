@@ -12,29 +12,24 @@ const utils = {
         return !!argv.includes("--minify");
     },
 
-    getTarget: argv => {
-        return argv[argv.indexOf("--target") + 1];
-    },
-
     getBanner: packageJson => {
         return `/*!\n${packageJson.name} ${packageJson.version} ${dateFormat(Date.now(), "UTC:yyyy-mm-dd HH:MM")} UTC\n${license}\n*/`;
     },
 
-    getRollupInputPath: (packageJson, target) => {
+    getRollupInputPath: packageJson => {
 
-        let moduleName = packageJson.name.split("/").pop();
+        let pkgNameSplit = packageJson.name.split("/");
 
-        return `./dist/${target}/${moduleName}/src/${moduleName}.js`;
+        return `./dist/${packageJson.name}/src/${pkgNameSplit[pkgNameSplit.length - 1]}.js`;
     },
 
-    getRollupOutputPath: (packageJson, format, target, minify) => {
+    getRollupOutputPath: (packageJson, format, minify) => {
 
-        let moduleName  = packageJson.name.split("/").pop(),
-            bundleFolder  = format === "umd" ? "bundles" : `${target.slice(0, 2)}m${target.slice(2)}`,
-            formatExtension = format === "umd" ? ".umd" : "",
+        let pkgNameSplit  = packageJson.name.split("/"),
+            bundleFolder  = format === "umd" ? "bundles" : "@ng-dynamic-forms",
             fileExtension = minify ? "min." : "";
 
-        return `./dist/${packageJson.name}/${bundleFolder}/${moduleName}${formatExtension}.${fileExtension}js`;
+        return `./dist/${packageJson.name}/${bundleFolder}/${pkgNameSplit[pkgNameSplit.length - 1]}.${format}.${fileExtension}js`;
     },
 
     getRollupPlugins: minify => {
@@ -74,8 +69,6 @@ const utils = {
             "angular2-text-mask": "angular2-text-mask",
             "ionic-angular": "ionic-angular",
             "ionic-angular/index": "ionic-angular",
-            "ngx-bootstrap/datepicker": "ngx-bootstrap.umd",
-            "ngx-bootstrap/timepicker": "ngx-bootstrap.umd",
             "primeng/primeng": "primeng/primeng",
             "rxjs/BehaviorSubject": "Rx.BehaviorSubject",
             "rxjs/Observable": "Rx.Observable",

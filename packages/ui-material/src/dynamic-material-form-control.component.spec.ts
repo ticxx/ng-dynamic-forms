@@ -15,7 +15,6 @@ import {
     MatSliderModule,
     MatSlideToggleModule
 } from "@angular/material";
-import { TextMaskModule } from "angular2-text-mask";
 import {
     DynamicFormsCoreModule,
     DynamicFormService,
@@ -84,7 +83,6 @@ describe("DynamicFormMaterialComponent test suite", () => {
                 MatSelectModule,
                 MatSliderModule,
                 MatSlideToggleModule,
-                TextMaskModule,
                 DynamicFormsCoreModule.forRoot()
             ],
             declarations: [DynamicMaterialFormControlComponent]

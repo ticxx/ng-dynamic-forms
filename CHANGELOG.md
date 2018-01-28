@@ -1,26 +1,3 @@
-# 5.4.3
-
-### **Features** 
-
-* initial text mask support for Material UI package (closes [#510](https://github.com/udos86/ng-dynamic-forms/issues/510))
-* `pattern` binding added to ion input (closes [#645](https://github.com/udos86/ng-dynamic-forms/issues/645))
-* upgrade to ngx-bootstrap `2.0.0`
-
-***
-
-# 5.4.2
-
-### **Features** 
-
-* `maxLength` attribute added to Material textarea control
-* upgrade to NG Bootstrap `beta.9`
-
-### **Bugfixes** 
-
-* minlength and maxlength error messages are now created correctly (closes [#647](https://github.com/udos86/ng-dynamic-forms/issues/647))
-
-***
-
 # 5.4.1
 
 ### **Features** 

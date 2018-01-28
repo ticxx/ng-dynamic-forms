@@ -1,10 +1,9 @@
 {
   "name": "@ng-dynamic-forms/core",
-  "version": "5.4.3",
+  "version": "5.4.1",
   "description": "A rapid form development library for Angular 2.x and higher",
   "main": "./bundles/core.umd.js",
-  "module": "./esm5/core.js",
-  "es2015": "./esm2015/core.js",
+  "module": "./@ng-dynamic-forms/core.es.js",
   "typings": "./core.d.ts",
   "keywords": [
     "angular",

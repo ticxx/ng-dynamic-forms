@@ -5,7 +5,7 @@
     <label
            [for]="model.id"
            [innerHTML]="model.label"
-           [ngClass]="[getClass('element', 'label'), getClass('grid', 'label')]"></label>
+           [ngClass]="[getClass('element', 'label'), getClass('grid', 'label')]"
            (click)="onCustomEvent($event, 'onShowHilfe')"
            [ngClass]="[model.cls.element.label, model.cls.grid.label]"></label>
 
@@ -151,51 +151,54 @@
             </div>
 
             <!-- FORM GROUP ------------------------------------------------------------------------------------------->
-            <div *ngSwitchCase="6" role="group"
-                 [dynamicId]="bindId && model.id"
-                 [formGroupName]="model.id"
-                 [ngClass]="getClass('element','control')">
+            <ng-container *ngSwitchCase="6">
+                 <div *ngIf="!model.layoutType" role="group"
+                     [dynamicId]="bindId && model.id"
+                     [formGroupName]="model.id"
+                     [ngClass]="getClass('element','control')">
 
-                <dynamic-ng-bootstrap-form-control *ngFor="let _model of model.group"
-                                                   [asBootstrapFormGroup]="true"
-                                                   [group]="control"
-                                                   [hasErrorMessaging]="_model.hasErrorMessages"
-                                                   [hidden]="_model.hidden"
-                                                   [layout]="layout"
-                                                   [model]="_model"
-                                                   [templates]="templateList"
-                                                   [ngClass]="[getClass('element', 'host', _model), getClass('grid', 'host', _model)]"
-                                                   (dfBlur)="onBlur($event)"
-                                                   (dfChange)="onValueChange($event)"
-                                                   (dfFocus)="onFocus($event)"
-                                                   (ngbEvent)="onCustomEvent($event)"></dynamic-ng-bootstrap-form-control>
-            </div>
+                    <dynamic-ng-bootstrap-form-control *ngFor="let _model of model.group"
+                                                       [asBootstrapFormGroup]="true"
+                                                       [group]="control"
+                                                       [hasErrorMessaging]="_model.hasErrorMessages"
+                                                       [hidden]="_model.hidden"
+                                                       [layout]="layout"
+                                                       [model]="_model"
+                                                       [templates]="templateList"
+                                                       [ngClass]="[getClass('element', 'host', _model), getClass('grid', 'host', _model)]"
+                                                       (dfBlur)="onBlur($event)"
+                                                       (dfChange)="onValueChange($event)"
+                                                       (dfFocus)="onFocus($event)"
+                                                       (ngbEvent)="onCustomEvent($event)"></dynamic-ng-bootstrap-form-control>
+                </div>
 
 
                 <ngb-tabset name="tabset" *ngIf="model.layoutType==='tabset'"
                                 [dynamicId]="bindId && model.id"
                                 [formGroupName]="model.id"
-                                [ngClass]="model.cls.element.control">
+                                [ngClass]="[getClass('element', 'host', model), getClass('grid', 'host', model)]">
                     <ng-container *ngFor="let tabModel of model.group">
 
                     <ngb-tab  *ngIf="tabModel.layoutType==='tab'"
                              [dynamicId]="bindId && tabModel.id"
-                             [ngClass]="tabModel.cls.element.control">
+                              [ngClass]="[getClass('element', 'host', tabModel), getClass('grid', 'host', tabModel)]">
 
 
 
                         <ng-template  ngbTabTitle><b  [innerHTML]="tabModel.caption "></b></ng-template>
                         <ng-template ngbTabContent>
-                            <dynamic-ng-bootstrap-form-control *ngFor="let controlModel of tabModel.layoutGroup"
+                            <dynamic-ng-bootstrap-form-control *ngFor="let _model of tabModel.layoutGroup"
                                                                [asBootstrapFormGroup]="false"
                                                                [group]="tabModel.angularFormGroup"
-                                                               [hasErrorMessaging]="controlModel.hasErrorMessages"
-                                                               [model]="controlModel"
-                                                               [templates]="templates"
-                                                               [ngClass]="[controlModel.cls.element.host, controlModel.cls.grid.host]"
-                                                               (blur)="onBlurEvent($event)"
-                                                               (change)="onValueChange($event)"
-                                                               (focus)="onFocusEvent($event)"
+                                                               [hasErrorMessaging]="_model.hasErrorMessages"
+                                                               [hidden]="_model.hidden"
+                                                               [layout]="layout"
+                                                               [model]="_model"
+                                                               [templates]="templateList"
+                                                               [ngClass]="[getClass('element', 'host', _model), getClass('grid', 'host', _model)]"
+                                                               (dfBlur)="onBlur($event)"
+                                                               (dfChange)="onValueChange($event)"
+                                                               (dfFocus)="onFocus($event)"
                                                                (ngbEvent)="onCustomEvent($event)">
                             </dynamic-ng-bootstrap-form-control>
                         </ng-template>
@@ -327,14 +330,16 @@
                             [seconds]="model.showSeconds"
                             [secondStep]="getAdditional('secondStep', 1)"
                             [size]="getAdditional('size', 'medium')"
-                            [spinners]="getAdditional('spinners', true)"></ngb-timepicker>
-                            [spinners]="true"></ngb-timepicker>
+                            [spinners]="getAdditional('spinners', true)">
+
+            </ngb-timepicker>
+
 <!-- ToDo Refactor Cards *ngIf -->
 
 
             <div class="card" *ngSwitchCase="80"
                  [dynamicId]="bindId && model.id"
-                 [ngClass]="model.cls.element.control">
+                 [ngClass]="[getClass('element', 'host', model), getClass('grid', 'host', model)]">
 
                 <h4 *ngIf="model.layoutType==='card_with_header'"
                     class="card-header"
@@ -349,16 +354,18 @@
                         [innerHTML]="model.caption">LayoutGroup Title
                     </h5>
 
-                    <dynamic-ng-bootstrap-form-control *ngFor="let controlModel of model.layoutGroup"
-                                                       [asBootstrapFormGroup]="false"
+                    <dynamic-ng-bootstrap-form-control *ngFor="let _model of model.layoutGroup"
+                                                       [asBootstrapFormGroup]="true"
                                                        [group]="model.angularFormGroup"
-                                                       [hasErrorMessaging]="controlModel.hasErrorMessages"
-                                                       [model]="controlModel"
-                                                       [templates]="templates"
-                                                       [ngClass]="[controlModel.cls.element.host, controlModel.cls.grid.host]"
-                                                       (blur)="onBlurEvent($event)"
-                                                       (change)="onValueChange($event)"
-                                                       (focus)="onFocusEvent($event)"
+                                                       [hasErrorMessaging]="_model.hasErrorMessages"
+                                                       [hidden]="_model.hidden"
+                                                       [layout]="layout"
+                                                       [model]="_model"
+                                                       [templates]="templateList"
+                                                       [ngClass]="[getClass('element', 'host', _model), getClass('grid', 'host', _model)]"
+                                                       (dfBlur)="onBlur($event)"
+                                                       (dfChange)="onValueChange($event)"
+                                                       (dfFocus)="onFocus($event)"
                                                        (ngbEvent)="onCustomEvent($event)">
                     </dynamic-ng-bootstrap-form-control>
 
@@ -369,7 +376,7 @@
             <div class="card" *ngSwitchCase="90"
                  [dynamicId]="bindId && model.id"
                  [formGroupName]="model.id"
-                 [ngClass]="model.cls.element.control">
+                 [ngClass]="[getClass('element', 'host', model), getClass('grid', 'host', model)]">
 
                 <h4 *ngIf="model.layoutType==='card_with_header'"
                     class="card-header"
@@ -383,17 +390,21 @@
                         (click)="onCustomEvent($event, 'onShowHilfe')"
                         [innerHTML]="model.legend">Group Title
                     </h5>
-                    <dynamic-ng-bootstrap-form-control *ngFor="let controlModel of model.group"
-                                                       [asBootstrapFormGroup]="false"
+                    <dynamic-ng-bootstrap-form-control *ngFor="let _model of model.group"
+                                                       [asBootstrapFormGroup]="true"
                                                        [group]="control"
-                                                       [hasErrorMessaging]="controlModel.hasErrorMessages"
-                                                       [model]="controlModel"
-                                                       [templates]="templates"
-                                                       [ngClass]="[controlModel.cls.element.host, controlModel.cls.grid.host]"
-                                                       (blur)="onBlurEvent($event)"
-                                                       (change)="onValueChange($event)"
-                                                       (focus)="onFocusEvent($event)"
-                                                       (ngbEvent)="onCustomEvent($event)"></dynamic-ng-bootstrap-form-control
+                                                       [hasErrorMessaging]="_model.hasErrorMessages"
+                                                       [hidden]="_model.hidden"
+                                                       [layout]="layout"
+                                                       [model]="_model"
+                                                       [templates]="templateList"
+                                                       [ngClass]="[getClass('element', 'host', _model), getClass('grid', 'host', _model)]"
+                                                       (dfBlur)="onBlur($event)"
+                                                       (dfChange)="onValueChange($event)"
+                                                       (dfFocus)="onFocus($event)"
+                                                       (ngbEvent)="onCustomEvent($event)">
+
+                    </dynamic-ng-bootstrap-form-control
                     >
                 </div>
             </div>
