@@ -21,7 +21,6 @@ export interface DynamicFormControlModelConfig {
     tooltip?: string;
     helpId?: string;
     anforderungsstufe?: string;
-
 }
 
 export abstract class DynamicFormControlModel implements DynamicPathable {

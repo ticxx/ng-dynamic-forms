@@ -356,6 +356,7 @@ export class DynamicFormService {
                     }
                     if (controlModel instanceof DynamicFormLayoutGroupModel ) {
                         findByIdFn(id, (controlModel as DynamicFormLayoutGroupModel).layoutGroup);
+                        findByIdFn(id, (controlModel as DynamicFormLayoutGroupModel).group);
                     }
                 }
             };

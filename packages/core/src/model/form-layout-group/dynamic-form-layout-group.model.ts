@@ -19,6 +19,7 @@ export const DYNAMIC_FORM_CONTROL_TYPE_LAYOUT_GROUP = "LAYOUT_GROUP";
 export interface DynamicFormLayoutGroupModelConfig extends DynamicFormControlModelConfig {
 
     caption?: string;
+    group?: DynamicFormControlModel[];
     layoutGroup?: DynamicFormControlModel[];
     layoutType?: LayoutGroupLayoutType;
     layoutProperties?: any;
@@ -26,7 +27,7 @@ export interface DynamicFormLayoutGroupModelConfig extends DynamicFormControlMod
 }
 
 export class DynamicFormLayoutGroupModel extends DynamicFormControlModel {
-
+    @serializable() group: DynamicFormControlModel[] = [];
     @serializable() layoutGroup: DynamicFormControlModel[] = [];
     @serializable() caption: string | null;
     @serializable() layoutType: LayoutGroupLayoutType | null;
@@ -38,7 +39,7 @@ export class DynamicFormLayoutGroupModel extends DynamicFormControlModel {
     constructor(config: DynamicFormLayoutGroupModelConfig, layout?: DynamicFormControlLayout) {
 
         super(config, layout);
-
+        this.group = Array.isArray(config.group) ? config.group : [];
         this.layoutGroup = Array.isArray(config.layoutGroup) ? config.layoutGroup : [];
         this.caption = config.caption || null;
         this.layoutType = config.layoutType || null;
