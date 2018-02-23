@@ -86,6 +86,15 @@ export class DynamicNGBootstrapFormControlComponent extends DynamicFormControlCo
         super(changeDetectorRef, layoutService, validationService);
     }
 
+    // beforeTabChange($event: any) {
+    //     this.customEvent.emit($event as DynamicFormControlEvent);
+    // }
+
+    // geht nicht
+    // onNavigateDateSelect($event: any) {
+    //     this.change.emit($event as DynamicFormControlEvent);
+    // }
+
     ngOnChanges(changes: SimpleChanges) {
         super.ngOnChanges(changes);
 

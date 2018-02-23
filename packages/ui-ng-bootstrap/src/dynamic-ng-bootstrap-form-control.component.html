@@ -66,7 +66,9 @@
                             [showWeekdays]="getAdditional('showWeekdays', true)"
                             [showWeekNumbers]="getAdditional('showWeekNumbers', false)"
                             [startDate]="model.focusedDate"
-                            (select)="onValueChange($event)"></ngb-datepicker>
+                            (select)="onValueChange($event)">
+
+            </ngb-datepicker>
 
             <!-- CHECKBOX --------------------------------------------------------------------------------------------->
             <div *ngSwitchCase="3" class="form-check" [class.disabled]="model.disabled">
@@ -168,15 +170,14 @@
                        [startDate]="model.focusedDate"
                        (blur)="onBlur($event)"
                        (change)="onValueChange($event)"
-                       (focus)="onFocus($event)">
+                       (focus)="onFocus($event)"
+                       (navigate)="onValueChange($event)">
 
-                <div class="input-group-addon" (click)="datepicker.toggle()">
-                    <button class="btn btn-outline-secondary" type="button">
-                        <img [src]="model.toggleIcon" style="width: 1.2rem; height: 1rem; cursor: pointer;">
-                    </button>
-                    <!--<img *ngIf="model.toggleIcon" [src]="model.toggleIcon" style="cursor: pointer;" />-->
-                    <!--<span *ngIf="model.toggleLabel">{{ model.toggleLabel }}</span>-->
-                </div>
+                <!--<div class="input-group-addon" (click)="datepicker.toggle()" (blur)="onBlur($event)">-->
+                    <!--<button class="btn btn-outline-secondary" type="button">-->
+                        <!--<img [src]="model.toggleIcon" style="width: 1.2rem; height: 1rem; cursor: pointer;">-->
+                    <!--</button>-->
+                <!--</div>-->
 
             </div>
 
@@ -206,16 +207,20 @@
                 <ngb-tabset name="tabset" *ngIf="model.layoutType==='tabset'"
                                 [dynamicId]="bindId && model.id"
                                 [formGroupName]="model.id"
-                                [ngClass]="[getClass('element', 'host', model), getClass('grid', 'host', model)]">
+                                [ngClass]="[getClass('element', 'host', model), getClass('grid', 'host', model)]"
+                                (tabChange)="onCustomEvent($event,'tabEvent')">
                     <ng-container *ngFor="let tabModel of model.group">
 
                     <ngb-tab  *ngIf="tabModel.layoutType==='tab'"
+                              [id] = "tabModel.caption"
                              [dynamicId]="bindId && tabModel.id"
                               [ngClass]="[getClass('element', 'host', tabModel), getClass('grid', 'host', tabModel)]">
 
 
 
-                        <ng-template  ngbTabTitle><b  [innerHTML]="tabModel.caption "></b></ng-template>
+                        <ng-template  ngbTabTitle>
+                            <b [innerHTML]="tabModel.caption">
+                            </b></ng-template>
                         <ng-template ngbTabContent>
                             <dynamic-ng-bootstrap-form-control *ngFor="let _model of tabModel.layoutGroup"
                                                                [asBootstrapFormGroup]="false"
@@ -366,7 +371,7 @@
 
 <!-- ToDo Refactor Cards *ngIf -->
 
-
+            <!--LayoutGroupCardLayout= 80,-->
             <div class="card" *ngSwitchCase="80"
                  [dynamicId]="bindId && model.id"
                  [ngClass]="[getClass('element', 'host', model), getClass('grid', 'host', model)]">
@@ -375,7 +380,7 @@
                      class="card-header"
                      [class.is-invalid]="showErrorMessages">
                     <h4 (click)="onCustomEvent($event, 'onShowHilfe')"
-                        [innerHTML]="model.legend">LayoutGroup Header
+                        [innerHTML]="model.caption">LayoutGroup Header
                     </h4>
                     <div *ngIf="showErrorMessages" [ngClass]="[getClass('element', 'errors'), getClass('grid', 'errors')]">
                         <small *ngFor="let message of errorMessages" class="invalid-feedback d-block">{{ message }}</small>
@@ -409,6 +414,7 @@
 
             </div>
 
+            <!--GroupCardLayout= 90-->
             <div class="card" *ngSwitchCase="90"
                  [dynamicId]="bindId && model.id"
                  [formGroupName]="model.id"
