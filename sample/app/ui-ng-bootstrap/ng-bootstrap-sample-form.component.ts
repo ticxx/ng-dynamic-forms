@@ -41,6 +41,6 @@ export class NGBootstrapSampleFormComponent implements OnInit {
 
     test(){
         let inputModel = this.formService.findById("roomQuantity", this.formModel) ;
-        inputModel.valueUpdates.next(999);
+        // inputModel.valueUpdates.next(999);
     }
 }

@@ -9,10 +9,12 @@ import {
     DynamicSelectModel,
     DynamicTextAreaModel,
     DynamicTimePickerModel,
-    DynamicFormLayoutGroupModel
+    DynamicFormLayoutGroupModel,
+    LayoutGroupLayoutType,
+    GroupLayoutType
 } from "@ng-dynamic-forms/core";
-import { LayoutGroupLayoutType } from "../../../packages/core/src/model/form-layout-group/dynamic-form-layout-group.model";
-import { GroupLayoutType } from "../../../dist/@ng-dynamic-forms/core/src/model/form-group/dynamic-form-group.model";
+
+
 
 export const NG_BOOTSTRAP_SAMPLE_FORM_MODEL: DynamicFormControlModel[] = [
 
@@ -32,7 +34,7 @@ new DynamicFormGroupModel(
                         new DynamicFormGroupModel(
                             {
                                 id: "card",
-                                layoutType: "card",
+                                layoutType: GroupLayoutType.card,
                                 legend: "Room",
                                 group: [
                                     new DynamicSelectModel(

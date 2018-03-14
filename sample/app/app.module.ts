@@ -15,7 +15,7 @@ import { DynamicFormsBootstrapUIModule } from "@ng-dynamic-forms/ui-bootstrap";
 import { DynamicFormsFoundationUIModule } from "@ng-dynamic-forms/ui-foundation";
 import { DynamicFormsKendoUIModule } from "@ng-dynamic-forms/ui-kendo";
 import { DynamicFormsMaterialUIModule } from "@ng-dynamic-forms/ui-material";
-import { DynamicFormsNGBootstrapUIModule } from "@ng-dynamic-forms/ui-ng-bootstrap";
+// import { DynamicFormsNGBootstrapUIModule } from "@ng-dynamic-forms/ui-ng-bootstrap";
 import { DynamicFormsPrimeNGUIModule } from "@ng-dynamic-forms/ui-primeng";
 
 import { BasicSampleFormComponent } from "./ui-basic/basic-sample-form.component";
@@ -58,7 +58,7 @@ export function mockBackendFactory(mockBackend: MockBackend, baseRequestOptions:
         DynamicFormsFoundationUIModule,
         DynamicFormsKendoUIModule,
         DynamicFormsMaterialUIModule,
-        DynamicFormsNGBootstrapUIModule,
+        // DynamicFormsNGBootstrapUIModule,
         DynamicFormsPrimeNGUIModule
     ],
     declarations: [
@@ -67,7 +67,7 @@ export function mockBackendFactory(mockBackend: MockBackend, baseRequestOptions:
         FoundationSampleFormComponent,
         KendoSampleFormComponent,
         MaterialSampleFormComponent,
-        NGBootstrapSampleFormComponent,
+        // NGBootstrapSampleFormComponent,
         PrimeNGSampleFormComponent,
         ValidationMessageComponent,
         AppComponent

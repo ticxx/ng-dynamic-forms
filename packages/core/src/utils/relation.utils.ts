@@ -8,6 +8,7 @@ import {
     DYNAMIC_FORM_CONTROL_CONNECTIVE_AND,
     DYNAMIC_FORM_CONTROL_CONNECTIVE_OR
 } from "../model/misc/dynamic-form-control-relation.model";
+import { AbstractControl } from "@angular/forms/src/model";
 
 export class RelationUtils {
 
@@ -32,12 +33,38 @@ export class RelationUtils {
 
             let control = controlGroup.get(rel.id) as FormControl;
 
+            // OK dbconn Ergänzung wir wollen auch auf Controls aus anderen Tabs verweisen können.
+            // Wir können dies relativ entspann tun, da unsere Control Ids unique sind.
+            if( !control && controlGroup.parent && controlGroup.parent instanceof FormGroup) {
+                control = this.findControlInOtherTabs( controlGroup, rel.id);
+            }
+
             if (control && !controls.some(controlElement => controlElement === control)) {
                 controls.push(control);
             }
         }));
 
         return controls;
+    }
+
+    // Eigentlich wäre hier eine rekursive Lösung gut aber uns reichen zur Zeit die Controls unter den Tabs
+    static findControlInOtherTabs ( currentTab: FormGroup, key: string ) {
+      //  if( currentTab.parent && currentTab.parent instanceof FormGroup) {
+            const pGroup = <FormGroup> currentTab.parent;
+            let _control = pGroup.get(key) as FormControl;
+            if (!_control) {
+                Object.keys(pGroup.controls).forEach(_key => {
+                    // eigentlich wollen wir die Schleife verlassen wenn wir das Cintrol gefunden haben ...
+                    // break wirft einen ts Fehler ???
+                    if (!_control) {
+                        const child = <AbstractControl> pGroup.get( _key );
+                        _control = child.get( key ) as FormControl;
+                    }
+                });
+            }
+            return _control;
+
+
     }
 
     static isFormControlToBeDisabled(relGroup: DynamicFormControlRelationGroup, _formGroup: FormGroup): boolean {
@@ -47,6 +74,9 @@ export class RelationUtils {
         return relGroup.when.reduce((toBeDisabled: boolean, rel: DynamicFormControlRelation, index: number) => {
 
             let control = formGroup.get(rel.id);
+            if( !control && formGroup.parent && formGroup.parent instanceof FormGroup) {
+                control = this.findControlInOtherTabs( formGroup, rel.id);
+            }
 
             if (control && relGroup.action === DYNAMIC_FORM_CONTROL_ACTION_DISABLE) {
 
