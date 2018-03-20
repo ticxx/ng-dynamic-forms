@@ -458,10 +458,10 @@
 
 
 
-            <small *ngIf="showHint" class="text-muted" [innerHTML]="model.hint"
+            <small *ngIf="showHint && false" class="text-muted" [innerHTML]="model.hint"
                    [ngClass]="getClass('element', 'hint')"></small>
 
-            <div *ngIf="showErrorMessages" [ngClass]="[getClass('element', 'errors'), getClass('grid', 'errors')]">
+            <div *ngIf="showErrorMessages && type !== 90 " [ngClass]="[getClass('element', 'errors'), getClass('grid', 'errors')]">
                 <small *ngFor="let message of errorMessages" class="invalid-feedback d-block">{{ message }}</small>
             </div>
 
